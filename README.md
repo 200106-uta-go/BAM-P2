@@ -7,23 +7,23 @@ Working in groups of 3 or 4, deploy a multi-instance server and VNFs to a produc
 
 ### Recommended Tools
 
-    [ ] DockerHub
-    [ ] AWS/GCE/Azure
-    [ ] Jenkins/CircleCI/TravisCI
-    [ ] Terraform
-    [ ] Kubernetes
+- [ ] DockerHub
+- [ ] AWS/GCE/Azure
+- [ ] Jenkins/CircleCI/TravisCI
+- [ ] Terraform
+- [ ] Kubernetes
 
 ### Requirements
 
-    [ ] Documentation
-    [ ] Agile/Scrum Project Management
-    [ ] Git Branching & Semantic Versioning
-    [ ] (Cloud) Production Environment
-    [ ] CI/CD Pipeline
-    [ ] Infrastructure as Code
-    [ ] Orchestration
+- [ ] Documentation
+- [ ] Agile/Scrum Project Management
+- [ ] Git Branching & Semantic Versioning
+- [ ] (Cloud) Production Environment
+- [ ] CI/CD Pipeline
+- [ ] Infrastructure as Code
+- [ ] Orchestration
 
 ### Presentation
 
-    [ ] 15-minute Demonstration
-    [ ] Presentation Slides
+- [ ] 15-minute Demonstration
+- [ ] Presentation Slides
