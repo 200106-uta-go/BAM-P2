@@ -1,6 +1,7 @@
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/200106-uta-go/BAM-P2?include_prereleases)
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square)](https://goreportcard.com/report/github.com/200106-uta-go/BAM-P2)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/200106-uta-go/BAM-P2)
-[![Release](https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square)](https://github.com/200106-uta-go/BAM-P2/releases/latest)
 
 # BAM-P2
 {Brandon, Aaron, and Matt][Project 2][Revature]
