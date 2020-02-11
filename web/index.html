@@ -1,0 +1,20 @@
+<!DOCTYPE html5>
+<html>
+  <head>
+    <title>GoJournal</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+      <header>
+        <h1>Welcome to GoJournal</h1>
+      </header>
+      <ul id="editorMenu">
+        <li><button id="addButton">Add Entry</button></li>  <!-- POST to /GoJournal -->
+        <li><button id="editButton">Edit</button></li>      <!-- GET to /edit -->
+      </ul>
+      <textarea id="editorArea" placeholder="Type your journal entry here"></textarea>
+      <script src="index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    text-align: center;
+    width: 100%;
+    background-color: whitesmoke;
+}
+
+h1 {
+    color: rebeccapurple;
+    margin: 1em 0;
+}
+
+#editorMenu {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    list-style: none;
+    margin: 0 20%;
+}
+
+#editorMenu button {
+    padding: 0.5em 1em;
+    margin: 1em 3em 1em 0;
+    background-color: lightblue;
+    border: 1px solid gray;
+    box-shadow: 0 3px 3px gray;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+#editorArea {
+    width: 60%;
+    height: 70vh;
+    padding: 1em;
+    border: none;
+    box-shadow: 0 8px 10px gray;
+}
+
