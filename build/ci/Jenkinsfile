@@ -3,8 +3,15 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                sh 'go version'
+                sh 'go build cmd/reverseproxy/*.go'
+                sh 'go build cmd/server/*.go'
             }
+        }
+    }
+    post {
+        always {
+            discordSend description: "**Build:** " + currentBuild.currentResult, link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "https://discordapp.com/api/webhooks/677199669800992808/h3JY51JaIGlS84wm5bCEGeLdxEtPh4loNiglOuKV_6OgyWRfl4T4teqvkz0GfsK-_pC0"
+
         }
     }
 }
