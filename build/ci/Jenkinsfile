@@ -3,7 +3,8 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                sh 'go version'
+                sh 'go build cmd/reverseproxy/*.go'
+                sh 'go build cmd/server/*.go'
             }
         }
     }
