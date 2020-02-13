@@ -10,9 +10,25 @@ body {
     background-color: whitesmoke;
 }
 
+nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: rebeccapurple;
+    padding: 0 12vw;
+    list-style: none;
+}
+
+#loginNav {
+    margin-top: 0.5em;
+    padding: 0.5em 1.2em;
+    background-color: whitesmoke;
+    border: none;
+}
+
 h1 {
-    color: rebeccapurple;
-    margin: 1em 0;
+    color: white;
+    margin: 0.3em 0;
 }
 
 #editorMenu {
@@ -41,5 +57,44 @@ button:hover {
     padding: 1em;
     border: none;
     box-shadow: 0 8px 10px gray;
+}
+
+#loginFrame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background-color: whitesmoke;
+}
+
+#loginModal {
+    display: flex;
+    flex-direction: row;
+    margin: 5% 0 5% 12%;
+    padding: 8% 5% 0;
+    text-align: right;
+}
+
+#loginModal form {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin: 2em;
+    border: 1px solid black;
+    padding: 3em 3em;
+}
+
+#loginModal button {
+    margin-top: 1.2em;
+    background-color: rebeccapurple;
+    color: white;
+    padding: .5em;
+}
+
+.loginEntry {
+    margin: 0.5em;
 }
 
