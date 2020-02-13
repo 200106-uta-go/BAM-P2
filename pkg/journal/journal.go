@@ -35,7 +35,7 @@ func InputEntry(db *sql.DB) {
 
 	ifEntryExists(db, journalEntry, journalDate)
 
-	printEntry(db, journalDate)
+	PrintEntry(db, journalDate)
 }
 
 // InputEntryDate prompts the user for a date as a string and prompts the user
@@ -77,7 +77,7 @@ func InputEntryDate(db *sql.DB) {
 
 	ifEntryExists(db, journalEntry, journalDate)
 
-	printEntry(db, journalDate)
+	PrintEntry(db, journalDate)
 }
 
 // ViewEntry prints the date and entry of a particular date
@@ -257,7 +257,7 @@ func EditEntry(db *sql.DB) {
 		os.Exit(0)
 	}
 
-	printEntry(db, journalDate)
+	PrintEntry(db, journalDate)
 
 	fmt.Println("Input replacement entry:")
 	journalEntry, err := reader.ReadString('\n')
@@ -273,7 +273,7 @@ func EditEntry(db *sql.DB) {
 	defer statement.Close()
 	statement.Exec(journalEntry, journalDate)
 
-	printEntry(db, journalDate)
+	PrintEntry(db, journalDate)
 }
 
 // Help prints out the possible flags to use onto the console
@@ -343,8 +343,8 @@ func ifEntryExists(db *sql.DB, journalEntry string, journalDate string) {
 	}
 }
 
-// printEntry prints the entry of a specified date onto the console
-func printEntry(db *sql.DB, journalDate string) {
+// PrintEntry prints the entry of a specified date onto the console
+func PrintEntry(db *sql.DB, journalDate string) {
 	rows, err := db.Query("SELECT * FROM journal_entries WHERE date = ?", journalDate)
 	if err != nil {
 		log.Fatal(err)
