@@ -1,10 +1,10 @@
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/200106-uta-go/BAM-P2?include_prereleases)](https://github.com/200106-uta-go/BAM-P2/releases)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/200106-uta-go/BAM-P2?style=flat-square)](https://goreportcard.com/report/github.com/200106-uta-go/BAM-P2)
+[![Go Report Card](https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square)](https://goreportcard.com/report/github.com/200106-uta-go/BAM-P2)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/200106-uta-go/BAM-P2)
 
 # BAM-P2
-[Brandon, Aaron, and Matt][Project 2][Revature]
+{Brandon, Aaron, and Matt][Project 2][Revature]
 
 ## Project 2 - Overlay Networking
 
