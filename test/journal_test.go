@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/200106-uta-go/BAM-P2/pkg/journal"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -44,7 +45,7 @@ func TestViewEntireJournal(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	ViewEntireJournal(database)
+	journal.ViewEntireJournal(database)
 
 	w.Close()
 	out, _ := ioutil.ReadAll(r)
@@ -83,7 +84,7 @@ func TestPrintEntry(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	printEntry(database, "01-01-2020")
+	journal.PrintEntry(database, "01-01-2020")
 
 	w.Close()
 	out, _ := ioutil.ReadAll(r)

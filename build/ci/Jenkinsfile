@@ -1,15 +1,28 @@
 pipeline {
-    agent { docker { image 'golang' } }
+    agent { docker { 
+        image 'golang' 
+        args '-u root:sudo'
+        } 
+    }
+    options {
+        timeout(time: 20, unit: 'SECONDS')
+    }
     stages {
         stage('build') {
             steps {
-                sh 'go get -d'
+                //get all dependencies including test dependencies
+                sh 'go get -d -t ./...'
+
+                //build all go apps
                 sh 'go build cmd/reverseproxy/*.go'
-                sh 'go build cmd/server/*.go'
+
+                //run all tests in project
+                sh 'go test ./...'
             }
         }
     }
     post {
+        //always send jenkins report to discord
         always {
             discordSend description: "**Build:** " + currentBuild.currentResult, link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: env.DISCORD_HOOK
         }
