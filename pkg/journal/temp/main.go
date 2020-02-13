@@ -10,23 +10,26 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 )
 
+// JEntry is the struct for setting up a json file
 type JEntry struct {
 	Date  string `json:"date"`
 	Entry string `json:"entry"`
 }
 
 var (
-	username    string   // Username of journal
-	password    string   // Password of journal
-	database    *sql.DB  // Pointer to database handle
-	err         error    // Temporary reference to error value
-	uTableID    int      // Temporary reference to id value of table user_table
-	uTableUN    string   // Temporary reference to username value of table user_table
-	uTablePS    string   // Temporary reference to password value of table user_table
-	jTableID    int      // Temporary reference to id value of table journal_entries
-	jTableDate  string   // Temporary reference to date value of table journal_entries
-	jTableEntry string   // Temporary reference to entry value of table journal_entries
-	JEntries    []JEntry // Slice of JEntry struct
+	username    string  // Username of journal
+	password    string  // Password of journal
+	database    *sql.DB // Pointer to database handle
+	err         error   // Temporary reference to error value
+	uTableID    int     // Temporary reference to id value of table user_table
+	uTableUN    string  // Temporary reference to username value of table user_table
+	uTablePS    string  // Temporary reference to password value of table user_table
+	jTableID    int     // Temporary reference to id value of table journal_entries
+	jTableDate  string  // Temporary reference to date value of table journal_entries
+	jTableEntry string  // Temporary reference to entry value of table journal_entries
+
+	// JEntries is a slice of JEntry struct for a json file
+	JEntries []JEntry
 )
 
 func init() {
@@ -34,10 +37,10 @@ func init() {
 	var port = 1433
 	var user = "<your_username>"
 	var password = "<your_password>"
-	var database = "<your_database>"
+	var db = "<your_database>"
 
 	// Build connection string
-	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d;database=%s;", server, user, password, port, database)
+	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d;database=%s;", server, user, password, port, db)
 
 	// Create connection pool
 	database, err = sql.Open("sqlserver", connString)
