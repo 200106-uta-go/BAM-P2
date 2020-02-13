@@ -104,14 +104,14 @@ func CheckUsername(db *sql.DB, un string) bool {
 	}
 }
 
-// CheckInvalidUNChars checks for the existence of special characters
+// CheckInvalidUNChars checks username for the existence of special characters 
 func CheckInvalidUNChars(un string) bool {
 	if strings.ContainsAny(un, " !@#$%^&()[]{}`~:;<>,./\\+*\"?'") == false {
 		return false
 	}
 }
 
-// CheckInvalidPSChars checks for the existence of special characters
+// CheckInvalidPSChars checks password for the existence of special characters
 func CheckInvalidPSChars(un string) bool {
 	if strings.ContainsAny(un, " ()[]{}~:;<>,./\\+\"'") == false {
 		return false
