@@ -3,21 +3,15 @@ pipeline {
     stages {
         stage('build') {
             steps {
-                //get all dependencies including test dependencies
-                sh 'go get -d -t ./...'
-
-                //build all go apps
                 sh 'go build cmd/reverseproxy/*.go'
-
-                //run all tests in project
-                sh 'go test ./...'
+                sh 'go build cmd/server/*.go'
             }
         }
     }
     post {
-        //always send jenkins report to discord
         always {
             discordSend description: "**Build:** " + currentBuild.currentResult, link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: env.DISCORD_HOOK
+
         }
     }
 }
