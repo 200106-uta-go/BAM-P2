@@ -8,10 +8,9 @@ import (
 
 const logPath = "./logs/project2log.log"
 
-var (
-	Logger *log.Logger // Writes a log to logfile
-	logchan chan // Channel for exporting log to log server
-)
+var Logger *log.Logger // Writes a log to logfile
+var	logchan chan // Channel for exporting log to log server
+
 func init() {
 	logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
