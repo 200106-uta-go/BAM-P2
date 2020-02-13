@@ -4,6 +4,9 @@ pipeline {
         args '-u root:sudo'
         } 
     }
+    options {
+        timeout(time: 20, unit: 'SECONDS')
+    }
     stages {
         stage('build') {
             steps {
