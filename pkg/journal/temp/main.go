@@ -42,10 +42,18 @@ func main() {
 	usercheck := CheckUsername(database, username)
 
 	if usercheck {
-		passwordcheck := CheckPassword(database, username, password)
+		for {
+			passwordcheck := CheckPassword(database, username, password)
 
-		if passwordcheck {
-
+			if passwordcheck {
+				/*
+					Implementation of main functions
+				*/
+			} else {
+				/*
+					Implement condition if password is invalid
+				*/
+			}
 		}
 	} else {
 		for {
@@ -55,9 +63,6 @@ func main() {
 			checkUsernameChars := CheckInvalidChars(username)
 			if checkUsernameChars {
 				for {
-					/*
-						Implement prompt and input method of new username
-					*/
 					checkPasswordChars := CheckInvalidChars(password)
 					if checkPasswordChars {
 						AddUsernamePassword(database, username, password)
