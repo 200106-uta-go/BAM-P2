@@ -4,21 +4,29 @@ import (
 	"database/sql"
 )
 
+type jEntry struct {
+	Date  string `json:"date"`
+	Entry string `json:"entry"`
+}
+
 var (
-	username    string  // Username of journal
-	password    string  // Password of journal
-	database    *sql.DB // Pointer to database handle
-	err         error   // Temporary reference to error value
-	uTableID    int     // Temporary reference to id value of table user_table
-	uTableUN    string  // Temporary reference to username value of table user_table
-	uTablePS    string  // Temporary reference to password value of table user_table
-	jTableID    int     // Temporary reference to id value of table journal_entries
-	jTableDate  string  // Temporary reference to date value of table journal_entries
-	jTableEntry string  // Temporary reference to entry value of table journal_entries
+	username    string   // Username of journal
+	password    string   // Password of journal
+	database    *sql.DB  // Pointer to database handle
+	err         error    // Temporary reference to error value
+	uTableID    int      // Temporary reference to id value of table user_table
+	uTableUN    string   // Temporary reference to username value of table user_table
+	uTablePS    string   // Temporary reference to password value of table user_table
+	jTableID    int      // Temporary reference to id value of table journal_entries
+	jTableDate  string   // Temporary reference to date value of table journal_entries
+	jTableEntry string   // Temporary reference to entry value of table journal_entries
+	jEntries    []jEntry // LIst of jEntry struct
 )
 
 func init() {
 	// **Need to alter database access for SQL Server or Postgres**
+	dataSourceName
+
 	// Makes a handle for the database journal
 	database, err = sql.Open("sqlite3", dataSourceName)
 	if err != nil {
@@ -26,6 +34,7 @@ func init() {
 	}
 }
 
+// Tentative plan for user authorization
 func main() {
 	/*
 		Implement acquisition methods for username and password
@@ -68,7 +77,7 @@ func main() {
 		}
 	}
 
-	// Creates the table user_table if it does not exist
+	// Creates the username table if it does not exist
 	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS ? (id INTEGER PRIMARY KEY, username TEXT, password TEXT)")
 	if err != nil {
 		log.Fatal(err)
@@ -148,9 +157,20 @@ func InputEntry(db *sql.DB, un string, jEntry string) {
 	printEntry(db, jDate)
 }
 
+// EditEntry replaces the journal entry of a particular date
+func EditEntry(db *sql.DB, un string, jDate string, jEntry string) {
+	statement, err := db.Prepare("UPDATE ? SET entry = ? WHERE date = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer statement.Close()
+	defer return
+	statement.Exec(un, jEntry, jDate)
+}
+
 // ifEntryExists checks to see if an entry for a certain date already exists
 // in the username table in a specified SQL database.
-func ifEntryExists(db *sql.DB, un string, jEntry string, jDate string) {
+func IfEntryExists(db *sql.DB, un string, jEntry string, jDate string) {
 	rows, err := db.Query(`SELECT * FROM ? WHERE date = ?`, un, jDate)
 	if err != nil {
 		log.Fatal(err)
@@ -164,39 +184,49 @@ func ifEntryExists(db *sql.DB, un string, jEntry string, jDate string) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		// If the date of the entry already exists, the entry will be added	to
+		// the preexisting entry after a new line.
 		if jTableDate == jDate {
-			dateExists = true
-		}
-	}
-
-	// If the date of the entry already exists, the entry will be added	to
-	// the preexisting entry after a new line.
-	if dateExists {
-		rows, err = db.Query("SELECT * FROM un WHERE date = ?", un, jDate)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for rows.Next() {
-			err := rows.Scan(&jTableID, &jTableDate, &jTableEntry)
+			rows, err = db.Query("SELECT * FROM ? WHERE date = ?", un, jDate)
 			if err != nil {
 				log.Fatal(err)
 			}
-			jEntry = fmt.Sprint(jTableEntry + "\n\n" + jEntry)
-		}
+			for rows.Next() {
+				err := rows.Scan(&jTableID, &jTableDate, &jTableEntry)
+				if err != nil {
+					log.Fatal(err)
+				}
+				jEntry = fmt.Sprint(jTableEntry + "\n\n" + jEntry)
+			}
 
-		statement, err := db.Prepare("UPDATE un SET entry = ? WHERE date = ?")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer statement.Close()
-		statement.Exec(un, jEntry, jDate)
+			EditEntry(db, un, jDate, jEntry)
+			return
 
-	} else {
-		statement, err := db.Prepare("INSERT INTO un (date, entry) VALUES (?, ?)")
-		if err != nil {
-			log.Fatal(err)
+		} else {
+			statement, err := db.Prepare("INSERT INTO ? (date, entry) VALUES (?, ?)")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer statement.Close()
+			defer return
+			statement.Exec(un, jDate, jEntry)
 		}
-		defer statement.Close()
-		statement.Exec(un, jDate, jEntry)
 	}
+}
+
+// OutputJournal returns entire journal of username in []jEntry format
+func OutputJournal(un string) []jEntry {
+	rows, err = database.Query("SELECT * FROM ? ORDER BY date DESC", un)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jEntries = []jEntry{}
+
+	for rows.Next() {
+		rows.Scan(&dbid, &dbdate, &dbentry)
+		jEntries = append(jEntries, jEntry{Date: dbdate, Entry: dbentry})
+	}
+
+	return jEntries
 }
