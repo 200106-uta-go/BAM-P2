@@ -19,7 +19,7 @@ nav {
     list-style: none;
 }
 
-#loginNav {
+.navButton {
     margin-top: 0.5em;
     padding: 0.5em 1.2em;
     background-color: whitesmoke;

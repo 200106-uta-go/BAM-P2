@@ -1,6 +1,7 @@
 //buttons
 let editButton = document.getElementById("editButton");
 let addButton = document.getElementById("addButton");
+let getButton = document.getElementById("getButton");
 
 //editor area
 let editorArea = document.getElementById("editorArea");
@@ -12,8 +13,7 @@ let loginFrame = document.getElementById("loginFrame");
 let usernameInput = document.getElementById("username");
 let passwordInput = document.getElementById("password");
 let createUserInput = document.getElementById("createUsername");
-let createEmailInput = document.getElementById("createPassword");
-let createPasswordInput = document.getElementById("createEmail");
+let createPasswordInput = document.getElementById("createPassword");
 let loginErr = document.getElementById("loginErr");
 let createUserErr = document.getElementById("createUserErr");
 
@@ -23,13 +23,16 @@ let loginNav = document.getElementById("loginNav");
 let userObj = {};
 
 let loggedIn = false;
+let authServer = "http://localhost:8080";
 
-//once the page has loaded, check if the user is logged in already
+//once the page has loaded, check if the user is logged in already via session/cookies
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("/login").then(resp => {
+    fetch(authServer + "/login").then(resp => {
         if (resp.status == 200) {
             loggedIn = true;
-            user = resp.json().then(json => userObj = json);
+            resp.json().then(json => {
+                userObj = json;
+            });
         }
         else {
             showLoginScreen();
@@ -37,8 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+//doesnt do anything yet
 editButton.addEventListener("click", () => {
-    fetch("/editJournal").then(resp => {
+    fetch(authServer + "/editJournal").then(resp => {
         if (resp != 200) {
             showLoginScreen();
         }
@@ -48,20 +52,48 @@ editButton.addEventListener("click", () => {
     });
 });
 
-addButton.addEventListener("click", () => {
-    fetch("/addJournal", {
-        method: "post",
-        body: {
-            date: "",
-            text: editorArea.nodeValue,
-        }
+//gets the user's entire journal and puts the latest into the editor
+getButton.addEventListener("click", () => {
+    fetch(authServer + "/getJournal", {
+        method: "POST",
+        headers: {"Content-Type": "text/plain"},
+        body: JSON.stringify({
+            Username: userObj.username,
+            Journal: [],
+        })
     }).then(resp => {
-        if (resp != 200) {
+        if (resp.status != 200) {
             showLoginScreen();
         }
         return resp.json();
     }).then(json => {
-        console.log(json);
+        let output = "";
+        json.journal.forEach(entry => {
+            output += `${entry.date}\n${entry.entry}\n\n\n`
+        });
+        editorArea.value = output;
+    });
+});
+
+//adds a journal entry to the db for today's date
+addButton.addEventListener("click", () => {
+    console.log(userObj);
+    fetch(authServer + "/addJEntry", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+            Username: userObj.username,
+            Journal: [
+                {
+                    date: "",
+                    entry: editorArea.value
+                }
+            ],
+        })
+    }).then(resp => {
+        if (resp.status != 200) {
+            showLoginScreen();
+        }
     });
 });
 
@@ -70,36 +102,37 @@ userLogin.addEventListener("click", e => {
     let name = usernameInput.value;
     let pass = passwordInput.value;
     if (validateUser(name) && validatePass(pass)) {
-        login(name, pass).then(res => {
-            loggedIn = res;
-        });
+        login(name, pass);
         hideLoginScreen();
         clearLogins();
     } else {
-        loginErr.innerText = "Invalid username or password, try again";
+        loginErr.innerText = "Invalid character in username or password, try again";
     }
 });
 
 userCreate.addEventListener("click", e => {
     e.preventDefault();
-    let email = createEmailInput.value;
     let name = createUserInput.value;
     let pass = createPasswordInput.value;
     if (validateUser(name) && validatePass(pass)) {
-        createUser(name, pass, email).then(res => {
-            loggedIn = res;
+        createUser(name, pass).then(created => {
+            if (created) {
+                login(name, pass);
+            }
         });
         hideLoginScreen();
         clearLogins();
     } else {
-        createUserErr.innerText = "Invalid username or password, try again";
+        createUserErr.innerText = "Invalid character in username or password, try again";
     }
 });
 
+//shows login screen when user clicks "log in" button
 loginNav.addEventListener("click", () => {
     showLoginScreen();
 });
 
+//clears login input fields when user clicks or tabs into login window
 loginFrame.addEventListener("focus", () => {
     loginErr.innerText = "";
     createUserErr.innerText = "";
@@ -115,42 +148,50 @@ hideLoginScreen = () => {
     loginFrame.style.display = "none";
 }
 
+//checks user credentials from db and returns a boolean indicating
+//if the user was successfully logged in or not
 let login = (user, pass) => {
-    return fetch("/login", {
-        method: "post",
-        body: {
-            user: user,
-            pass: pass,
-        }
+    return fetch(authServer + "/login", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+            username: user,
+            password: pass
+        })
     }).then(resp => {
         if (resp.status == 200) {
-            loggedIn = true;
-            resp.json().then(json => userObj = json);
-            updateUserMenu();
+            resp.json().then(json => {
+                userObj = json;
+                updateUserMenu();
+            });
         }
+        loggedIn = resp.status == 200;
         return resp.status == 200;
     });
 }
 
-createUser = (user, pass, email) => {
-    return fetch("/createUser", {
-        method: "post",
-        body: {
-            user: user,
-            pass: pass,
-            email: email,
-        }
+//creates a new user in the db and returns a boolean
+//indicating whether user creation was successful
+createUser = (user, pass) => {
+    return fetch(authServer + "/createUser", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+            username: user,
+            password: pass
+        })
     }).then(resp => {
         return resp.status == 200;
     });
 }
 
+//updates the user menu in navigation with the current contents of userObj
 let updateUserMenu = () => {
     if (loggedIn) {
-        userMenu.innerHTML = `<button id="userDropdown">${user.name}</button>`;
+        userMenu.innerHTML = `<button id="userDropdown" class="navButton">&#9660; ${userObj.username}</button>`;
     }
     else {
-        userMenu.innerHTML = `<button id="loginNav">Log In</button>`
+        userMenu.innerHTML = `<button id="loginNav" class="navButton">Log In</button>`
     }
 }
 
@@ -158,7 +199,6 @@ let clearLogins = () => {
     usernameInput.value = "";
     passwordInput.value = "";
     createUserInput.value = "";
-    createEmailInput.value = "";
     createPasswordInput.value = "";
 }
 
