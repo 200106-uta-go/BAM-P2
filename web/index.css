@@ -98,3 +98,10 @@ button:hover {
     margin: 0.5em;
 }
 
+.invalid {
+    color: red;
+    font-size: 0.8em;
+    text-align: center;
+    margin: 1em 0 -1em;
+}
+

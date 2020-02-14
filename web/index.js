@@ -14,6 +14,8 @@ let passwordInput = document.getElementById("password");
 let createUserInput = document.getElementById("createUsername");
 let createEmailInput = document.getElementById("createPassword");
 let createPasswordInput = document.getElementById("createEmail");
+let loginErr = document.getElementById("loginErr");
+let createUserErr = document.getElementById("createUserErr");
 
 //webpage header
 let userMenu = document.getElementById("userMenu");
@@ -67,11 +69,15 @@ userLogin.addEventListener("click", e => {
     e.preventDefault();
     let name = usernameInput.value;
     let pass = passwordInput.value;
-    login(name, pass).then(res => {
-        loggedIn = res;
-    });
-    hideLoginScreen();
-    clearLogins();
+    if (validateUser(name) && validatePass(pass)) {
+        login(name, pass).then(res => {
+            loggedIn = res;
+        });
+        hideLoginScreen();
+        clearLogins();
+    } else {
+        loginErr.innerText = "Invalid username or password, try again";
+    }
 });
 
 userCreate.addEventListener("click", e => {
@@ -79,15 +85,24 @@ userCreate.addEventListener("click", e => {
     let email = createEmailInput.value;
     let name = createUserInput.value;
     let pass = createPasswordInput.value;
-    createUser(name, pass, email).then(res => {
-        loggedIn = res;
-    });
-    hideLoginScreen();
-    clearLogins();
+    if (validateUser(name) && validatePass(pass)) {
+        createUser(name, pass, email).then(res => {
+            loggedIn = res;
+        });
+        hideLoginScreen();
+        clearLogins();
+    } else {
+        createUserErr.innerText = "Invalid username or password, try again";
+    }
 });
 
 loginNav.addEventListener("click", () => {
     showLoginScreen();
+});
+
+loginFrame.addEventListener("focus", () => {
+    loginErr.innerText = "";
+    createUserErr.innerText = "";
 });
 
 showLoginScreen = () => {
@@ -146,3 +161,7 @@ let clearLogins = () => {
     createEmailInput.value = "";
     createPasswordInput.value = "";
 }
+
+let validateUser = user => user.search(/[!@#$%^&()[]{}`~:;<>,.\/\\+\*"\?']/) == -1;
+
+let validatePass = pass => pass.search(/[()[]{}~:;<>,.\/\\+"']/) == -1;
