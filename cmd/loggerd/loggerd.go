@@ -85,7 +85,9 @@ func logSession(listn net.Listener) {
 
 		if string(cleanBuf) != "" {
 			fmt.Println(string(cleanBuf))
-
+			if !filewriter.WriteAppend("log.txt", cleanBuf) {
+				fmt.Println("Failed to write to log.txt")
+			}
 			/* if strings.Contains(string(cleanBuf), "Packet sent") || strings.Contains(string(cleanBuf), "Packet read") {
 				// only print packets to consoul
 				fmt.Println(string(cleanBuf))
