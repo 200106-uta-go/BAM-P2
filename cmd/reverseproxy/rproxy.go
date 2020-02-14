@@ -14,7 +14,9 @@ import (
 	"log"
 	"os"
 
-	t "github.com/Gamemastertwig/go-secure/rproxy/tcprproxy"
+	t "github.com/200106-uta-go/BAM-P2/pkg/tcprproxy"
+	// used to send log messages to multiple writers
+	_ "github.com/200106-uta-go/BAM-P2/pkg/logger"
 )
 
 type connection struct {

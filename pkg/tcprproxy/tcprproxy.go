@@ -9,7 +9,8 @@ import (
 	"net"
 	"time"
 
-	l "github.com/Gamemastertwig/go-secure/loghelper"
+	// used to send log messages to multiple writers
+	_ "github.com/200106-uta-go/BAM-P2/pkg/logger"
 )
 
 // Global Variables
@@ -21,11 +22,11 @@ func TCPForward(front string, back string, logger string, program string) {
 	// create tcp connection
 	listn, err := net.Listen("tcp", front)
 	if err != nil {
-		l.ConnLogMess(logger, program+" ERROR: ", front+" Failed to setup listiner for RPROXY")
+		// l.ConnLogMess(logger, program+" ERROR: ", front+" Failed to setup listiner for RPROXY")
 		log.Fatalf(program+" ERROR: ", front+" Failed to setup listiner for RPROXY")
 	}
 
-	l.ConnLogMess(logger, program+" LOG: ", "(TCP) Listening on "+front)
+	// l.ConnLogMess(logger, program+" LOG: ", "(TCP) Listening on "+front)
 	log.Println(program+" LOG: ", "(TCP) Listening on "+front)
 
 	// create connection signal channel
@@ -43,11 +44,11 @@ func TCPForwardLB(front string, backends []string, logAddr string, program strin
 	// create tcp connection
 	listn, err := net.Listen("tcp", front)
 	if err != nil {
-		l.ConnLogMess(logAddr, program+" ERROR: ", front+" Failed to setup listiner for LB RPROXY")
+		// l.ConnLogMess(logAddr, program+" ERROR: ", front+" Failed to setup listiner for LB RPROXY")
 		log.Fatalf(program+" ERROR: ", front+" Failed to setup listiner for LB RPROXY")
 	}
 
-	l.ConnLogMess(logAddr, program+" LOG: ", "(TCP) Listening on "+front)
+	// l.ConnLogMess(logAddr, program+" LOG: ", "(TCP) Listening on "+front)
 	log.Println(program+" LOG: ", "(TCP) Listening on "+front)
 
 	// create connection signal channel
@@ -80,7 +81,7 @@ func loadBalanceRand(backends []string, logAddr string, program string) string {
 	lenBack := len(backends)
 	n := rand.Intn(lenBack)
 
-	l.ConnLogMess(logAddr, program+" LOG: ", "Sending load to "+backends[n])
+	// l.ConnLogMess(logAddr, program+" LOG: ", "Sending load to "+backends[n])
 	log.Println(program+" LOG: ", "Sending load to "+backends[n])
 
 	return backends[n]
@@ -93,10 +94,10 @@ func Session(listn net.Listener, frontAddr string, backAddr string, logAddr stri
 	// wait for front end connection
 	frontConn, err := listn.Accept()
 	if err != nil {
-		l.ConnLogMess(logAddr, program+" ERROR:", "Failed to accept connection:: "+err.Error())
+		// l.ConnLogMess(logAddr, program+" ERROR:", "Failed to accept connection:: "+err.Error())
 		log.Fatalln(program + " ERROR: Failed to accept connection:: " + err.Error())
 	}
-	l.ConnLogMess(logAddr, program+" LOG:", "Accepted Connection from "+frontConn.LocalAddr().String())
+	// l.ConnLogMess(logAddr, program+" LOG:", "Accepted Connection from "+frontConn.LocalAddr().String())
 	log.Println(program + " LOG: Accepted Connection from " + frontConn.LocalAddr().String())
 
 	// defer close : member LIFO
@@ -108,10 +109,10 @@ func Session(listn net.Listener, frontAddr string, backAddr string, logAddr stri
 	// create connection for server end
 	serverConn, err := net.Dial("tcp", backAddr)
 	if err != nil {
-		l.ConnLogMess(logAddr, program+" ERROR:", "Dial failed for address "+backAddr+":: "+err.Error())
+		// l.ConnLogMess(logAddr, program+" ERROR:", "Dial failed for address "+backAddr+":: "+err.Error())
 		log.Fatalln(program + " ERROR: Dial failed for address " + backAddr + ":: " + err.Error())
 	}
-	l.ConnLogMess(logAddr, program+" LOG:", "Dial succesful to "+backAddr)
+	// l.ConnLogMess(logAddr, program+" LOG:", "Dial succesful to "+backAddr)
 	log.Println(program + " LOG: Dial succesful to " + backAddr)
 
 	// defer close
@@ -142,8 +143,8 @@ func TCPListen(conn net.Conn, packet chan []byte, logAddr string, fromAddr strin
 
 		err := conn.SetDeadline(time.Now().Add(1 * time.Second))
 		if err != nil {
-			l.ConnLogMess(logAddr, program+" ERROR:", "Failed deadline setup for "+
-				conn.LocalAddr().String()+":: "+err.Error())
+			// l.ConnLogMess(logAddr, program+" ERROR:", "Failed deadline setup for "+
+			//	conn.LocalAddr().String()+":: "+err.Error())
 			log.Println(program + " ERROR: Failed deadline setup for " +
 				conn.LocalAddr().String() + ":: " + err.Error())
 			break
@@ -160,7 +161,7 @@ func TCPListen(conn net.Conn, packet chan []byte, logAddr string, fromAddr strin
 		// place buffer in packet channel
 		packet <- cBuf
 
-		l.ConnLogMess(logAddr, program+" LOG: "+fromAddr+":", "Packet read.")
+		// l.ConnLogMess(logAddr, program+" LOG: "+fromAddr+":", "Packet read.")
 		log.Println(program + " LOG: " + fromAddr + ": Packet read.")
 	}
 	done <- "Done"
@@ -177,7 +178,7 @@ func TCPServe(conn net.Conn, packet chan []byte, logAddr string, fromAddr string
 		if conn != nil {
 			conn.Write(mBuf)
 
-			l.ConnLogMess(logAddr, program+" LOG: "+fromAddr+":", "Packet sent.")
+			// l.ConnLogMess(logAddr, program+" LOG: "+fromAddr+":", "Packet sent.")
 			log.Println(program + " LOG: " + fromAddr + ": Packet sent.")
 		}
 	}
