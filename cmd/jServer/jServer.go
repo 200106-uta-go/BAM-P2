@@ -44,6 +44,7 @@ func init() {
 
 	//load in environment variables from .env
 	//will print error message when running from docker image
+	//because env file is passed into docker run command
 	envErr := godotenv.Load("/home/ubuntu/go/src/github.com/200106-uta-go/BAM-P2/.env")
 	if envErr != nil {
 		log.Println("Error loading .env: ", envErr)

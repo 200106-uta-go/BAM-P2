@@ -11,6 +11,8 @@ run-local:
 
 docker-build:
 	docker build -t jserver cmd/jServer/.
+	docker build -t rproxy cmd/reverseproxy/.
 
 docker-run:
-	docker run --rm --env-file .env -p 4444:8080 jserver
+	docker run --rm --env-file .env -p 4444:8080 jserver &
+	docker run --rm --env-file .env -p 5555:8080 rproxy
