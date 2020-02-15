@@ -1,5 +1,5 @@
 # environment config
-.env
+*.env
 
 #binaries
 /build/bin

@@ -23,7 +23,9 @@ let loginNav = document.getElementById("loginNav");
 let userObj = {};
 
 let loggedIn = false;
-let authServer = "http://localhost:8080";
+
+//change this variable to point to the address of the server
+let authServer = "http://localhost:4444";
 
 //once the page has loaded, check if the user is logged in already via session/cookies
 document.addEventListener("DOMContentLoaded", () => {
