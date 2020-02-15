@@ -202,6 +202,6 @@ let clearLogins = () => {
     createPasswordInput.value = "";
 }
 
-let validateUser = user => user.search(/[!@#$%^&()[]{}`~:;<>,.\/\\+\*"\?']/) == -1;
+let validateUser = user => user.search(/[ !@#$%^&()\[\]{}`~:;<>,.\/\\+*"?']/) == -1;
 
-let validatePass = pass => pass.search(/[()[]{}~:;<>,.\/\\+"']/) == -1;
+let validatePass = pass => pass.search(/[ ()\[\]{}~:;<>,.\/\\+"']/) == -1;
