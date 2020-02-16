@@ -6,8 +6,10 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 
 	"github.com/200106-uta-go/BAM-P2/pkg/filewriter"
+	"github.com/joho/godotenv"
 )
 
 const logPath = "current.log"
@@ -19,14 +21,24 @@ func init() {
 	var logConn net.Conn
 	var logFile *os.File
 
-	err := os.Setenv("LOG_SVR_ADDR", ":9090")
+	//load in environment variables from .env
+	//will print error message when running from docker image
+	//because env file is passed into docker run command
+	err := godotenv.Load("/home/ubuntu/go/src/github.com/200106-uta-go/BAM-P2/.env")
 	if err != nil {
-		// failed to create env variable
+		if !strings.Contains(err.Error(), "no such file or directory") {
+			log.Println("Error loading .env: ", err)
+		}
+	}
+	logAddr := os.Getenv("LOG_ADDR")
+
+	if len(logAddr) < 1 {
+		// failed to get log address env variable
 	} else {
 		// connect to log server
-		logConn, err = net.Dial("tcp", os.Getenv("LOG_SVR_ADDR"))
+		logConn, err = net.Dial("tcp", logAddr)
 		if err != nil {
-			log.Printf("Failed to connect to %+v :: %+v", os.Getenv("LOG_SVR_ADDR"), err)
+			log.Printf("Failed to connect to %+v :: %+v", logAddr, err)
 			logSvr = false
 		} else {
 			logSvr = true
