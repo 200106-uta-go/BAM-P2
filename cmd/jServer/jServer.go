@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/joho/godotenv"
@@ -47,7 +48,9 @@ func init() {
 	//because env file is passed into docker run command
 	envErr := godotenv.Load("/home/ubuntu/go/src/github.com/200106-uta-go/BAM-P2/.env")
 	if envErr != nil {
-		log.Println("Error loading .env: ", envErr)
+		if !strings.Contains(envErr.Error(), "no such file or directory") {
+			log.Println("Error loading .env: ", envErr)
+		}
 	}
 
 	var server = os.Getenv("DB_SERVER")

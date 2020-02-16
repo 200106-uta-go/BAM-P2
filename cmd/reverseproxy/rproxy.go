@@ -12,10 +12,12 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 
 	t "github.com/200106-uta-go/BAM-P2/pkg/tcprproxy"
+
 	// used to send log messages to multiple writers
 	_ "github.com/200106-uta-go/BAM-P2/pkg/logger"
 )
@@ -49,12 +51,15 @@ func init() {
 	//because env file is passed into docker run command
 	envErr := godotenv.Load("/home/ubuntu/go/src/github.com/200106-uta-go/BAM-P2/.env")
 	if envErr != nil {
-		log.Println("Error loading .env: ", envErr)
+		if !strings.Contains(envErr.Error(), "no such file or directory") {
+			log.Println("Error loading .env: ", envErr)
+		}
 	}
+
 	connections = append(connections, connection{
 		FrontAddr: ":" + os.Getenv("REV_FRONT"),
 		BackAddr:  os.Getenv("REV_BACK"),
-		LogAddr:   os.Getenv("LOG_PORT"),
+		LogAddr:   os.Getenv("LOG_ADDR"),
 	})
 }
 
