@@ -10,13 +10,14 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
+	"os"
+	"strings"
 
 	"github.com/200106-uta-go/BAM-P2/pkg/filewriter"
+	"github.com/joho/godotenv"
 )
 
 // connection to logger server
@@ -33,20 +34,29 @@ func init() {
 }
 
 func getLogAdder() {
-	if filewriter.CheckForFile("logConfig.json") {
-		// file is present
-		f, err := ioutil.ReadFile("logConfig.json")
-		if err != nil {
-			log.Fatalf("Unable to open logConfig: %+v", err)
-		}
+	// if filewriter.CheckForFile("logConfig.json") {
+	// 	// file is present
+	// 	f, err := ioutil.ReadFile("logConfig.json")
+	// 	if err != nil {
+	// 		log.Fatalf("Unable to open logConfig: %+v", err)
+	// 	}
 
-		// decode config (json)
-		err = json.Unmarshal(f, &logs)
-		if err != nil {
-			log.Fatalf("Unable to decode logConfig: %+v", err)
+	// 	// decode config (json)
+	// 	err = json.Unmarshal(f, &logs)
+	// 	if err != nil {
+	// 		log.Fatalf("Unable to decode logConfig: %+v", err)
+	// 	}
+	// 	logAddr = logs[0].LogAddress
+	// }
+
+	envErr := godotenv.Load("/home/ubuntu/go/src/github.com/200106-uta-go/BAM-P2/.env")
+	if envErr != nil {
+		if !strings.Contains(envErr.Error(), "no such file or directory") {
+			log.Println("Error loading .env: ", envErr)
 		}
-		logAddr = logs[0].LogAddress
 	}
+
+	logAddr = ":" + os.Getenv("LOG_PORT")
 }
 
 func main() {
