@@ -43,21 +43,24 @@ type HTTPResponse struct {
 func init() {
 
 	//load in environment variables from .env
-	err := godotenv.Load("/home/ubuntu/go/src/github.com/200106-uta-go/BAM-P2/.env")
-	if err != nil {
-		log.Fatalln("Error loading .env: ", err)
+	//will print error message when running from docker image
+	//because env file is passed into docker run command
+	envErr := godotenv.Load("/home/ubuntu/go/src/github.com/200106-uta-go/BAM-P2/.env")
+	if envErr != nil {
+		log.Println("Error loading .env: ", envErr)
 	}
 
 	var server = os.Getenv("DB_SERVER")
-	var port = os.Getenv("DB_PORT")
+	var dbPort = os.Getenv("DB_PORT")
 	var dbUser = os.Getenv("DB_USER")
 	var dbPass = os.Getenv("DB_PASS")
 	var db = os.Getenv("DB_NAME")
 
 	// Build connection string
-	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;", server, dbUser, dbPass, port, db)
+	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;", server, dbUser, dbPass, dbPort, db)
 
 	// Create connection pool
+	var err error
 	database, err = sql.Open("sqlserver", connString)
 	if err != nil {
 		log.Fatal("Error creating connection pool: ", err.Error())
@@ -80,18 +83,17 @@ func init() {
 
 func main() {
 
-	//set up file server to serve html
-	fs := http.FileServer(http.Dir("../../web"))
+	servPort := ":" + os.Getenv("SERV_PORT")
 
-	//create endpoints for web client
-	http.Handle("/", fs)
+	//create endpoints for web client api
+	http.HandleFunc("/", goodRequest)
 	http.HandleFunc("/login", userLogin)
 	http.HandleFunc("/createUser", createUser)
 	http.HandleFunc("/addJEntry", addJEntry)
 	http.HandleFunc("/getJournal", getJournalEntries)
 
-	fmt.Println("Server listening at localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	fmt.Printf("HTTP server listening on port %s\n", servPort)
+	http.ListenAndServe(servPort, nil)
 }
 
 // setHeaders sets the response headers for an outgoing HTTP response
@@ -100,6 +102,24 @@ func setHeaders(w http.ResponseWriter) http.ResponseWriter {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
 	return w
+}
+
+func goodRequest(w http.ResponseWriter, r *http.Request) {
+	_, err := fmt.Fprintln(w, "OK")
+	genericErrHandler("error", err)
+}
+
+// badRequest sends an HTTP response with a Bad Request status code along
+// with the message passed into the function back to the client in JSON format
+func badRequest(w http.ResponseWriter, message string) {
+	response := HTTPResponse{
+		Message: message,
+	}
+	r, err := json.Marshal(response)
+	genericErrHandler("error", err)
+
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write(r)
 }
 
 // genericErrHandler is a function to replace the common
@@ -119,17 +139,4 @@ func genericErrHandler(action string, err error) {
 			log.Fatalln(err)
 		}
 	}
-}
-
-// badRequest sends an HTTP response with a Bad Request status code along
-// with the message passed into the function back to the client in JSON format
-func badRequest(w http.ResponseWriter, message string) {
-	response := HTTPResponse{
-		Message: message,
-	}
-	r, err := json.Marshal(response)
-	genericErrHandler("error", err)
-
-	w.WriteHeader(http.StatusBadRequest)
-	w.Write(r)
 }

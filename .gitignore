@@ -1,5 +1,8 @@
 # environment config
-.env
+*.env
 
 #binaries
 /build/bin
+
+#generated log files
+*.log

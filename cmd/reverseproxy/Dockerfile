@@ -1,23 +1,15 @@
 FROM golang:alpine AS builder
-
 # Create the directory where the application will reside
 WORKDIR /app
-
 ADD . .
-
 RUN apk add git
 # Install any dependencies
 RUN go get -d
-RUN go build -o rproxy
+RUN CGO_ENABLED=0 GOOS=linux go build -o rproxy *.go
 
-FROM alpine
-
+FROM scratch
 WORKDIR /app
-
 COPY --from=builder /app/. /app/.
-
-RUN apk add nano
-
+EXPOSE 8080
 ENTRYPOINT [ "./rproxy" ]
 
-EXPOSE 8080
