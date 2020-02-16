@@ -25,7 +25,7 @@ let userObj = {};
 let loggedIn = false;
 
 //change this variable to point to the address of the server
-let authServer = "http://localhost:4444";
+let authServer = "http://localhost:5555";
 
 //once the page has loaded, check if the user is logged in already via session/cookies
 document.addEventListener("DOMContentLoaded", () => {
@@ -44,14 +44,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //doesnt do anything yet
 editButton.addEventListener("click", () => {
-    fetch(authServer + "/editJournal").then(resp => {
-        if (resp != 200) {
-            showLoginScreen();
-        }
-        return resp.json();
-    }).then(json => {
-        console.log(json);
-    });
+    console.log("Sorry, the edit button hasn't been implemented yet");
+    // fetch(authServer + "/editJournal").then(resp => {
+    //     if (resp != 200) {
+    //         showLoginScreen();
+    //     }
+    //     return resp.json();
+    // }).then(json => {
+    //     console.log(json);
+    // });
 });
 
 //gets the user's entire journal and puts the latest into the editor
@@ -79,7 +80,6 @@ getButton.addEventListener("click", () => {
 
 //adds a journal entry to the db for today's date
 addButton.addEventListener("click", () => {
-    console.log(userObj);
     fetch(authServer + "/addJEntry", {
         method: "POST",
         headers: { "Content-Type": "text/plain" },

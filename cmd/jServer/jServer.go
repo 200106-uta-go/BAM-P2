@@ -85,11 +85,8 @@ func main() {
 
 	servPort := ":" + os.Getenv("SERV_PORT")
 
-	//set up file server to serve html
-	fs := http.FileServer(http.Dir("../../web"))
-
-	//create endpoints for web client
-	http.Handle("/", fs)
+	//create endpoints for web client api
+	http.HandleFunc("/", goodRequest)
 	http.HandleFunc("/login", userLogin)
 	http.HandleFunc("/createUser", createUser)
 	http.HandleFunc("/addJEntry", addJEntry)
@@ -105,6 +102,24 @@ func setHeaders(w http.ResponseWriter) http.ResponseWriter {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
 	return w
+}
+
+func goodRequest(w http.ResponseWriter, r *http.Request) {
+	_, err := fmt.Fprintln(w, "OK")
+	genericErrHandler("error", err)
+}
+
+// badRequest sends an HTTP response with a Bad Request status code along
+// with the message passed into the function back to the client in JSON format
+func badRequest(w http.ResponseWriter, message string) {
+	response := HTTPResponse{
+		Message: message,
+	}
+	r, err := json.Marshal(response)
+	genericErrHandler("error", err)
+
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write(r)
 }
 
 // genericErrHandler is a function to replace the common
@@ -124,17 +139,4 @@ func genericErrHandler(action string, err error) {
 			log.Fatalln(err)
 		}
 	}
-}
-
-// badRequest sends an HTTP response with a Bad Request status code along
-// with the message passed into the function back to the client in JSON format
-func badRequest(w http.ResponseWriter, message string) {
-	response := HTTPResponse{
-		Message: message,
-	}
-	r, err := json.Marshal(response)
-	genericErrHandler("error", err)
-
-	w.WriteHeader(http.StatusBadRequest)
-	w.Write(r)
 }
