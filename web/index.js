@@ -1,5 +1,4 @@
 //buttons
-let editButton = document.getElementById("editButton");
 let addButton = document.getElementById("addButton");
 let getButton = document.getElementById("getButton");
 
@@ -40,19 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
             showLoginScreen();
         }
     });
-});
-
-//doesnt do anything yet
-editButton.addEventListener("click", () => {
-    console.log("Sorry, the edit button hasn't been implemented yet");
-    // fetch(authServer + "/editJournal").then(resp => {
-    //     if (resp != 200) {
-    //         showLoginScreen();
-    //     }
-    //     return resp.json();
-    // }).then(json => {
-    //     console.log(json);
-    // });
 });
 
 //gets the user's entire journal and puts the latest into the editor
