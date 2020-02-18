@@ -1,0 +1,41 @@
+#deploy 3 jserver instances 
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+    name: jserver-deployment
+spec:
+    replicas: 3
+    selector:
+        matchLabels:
+            app: jserver
+    template:
+        metadata:
+            labels:
+                app: jserver
+        spec:
+            containers:
+            -   name: jserver
+                image: mattackard/jserver:v0.2
+                env:
+                -   name: DB_SERVER
+                    value: 
+                -   name: DB_USER
+                    value: 
+                -   name: DB_PORT
+                    value: 
+                -   name: DB_PASS
+                    value: 
+                -   name: DB_NAME
+                    value: 
+                -   name: SERV_PORT
+                    value: 
+                -   name: REV_FRONT
+                    value: 
+                -   name: REV_BACK
+                    value: 
+                -   name: LOG_ADDR
+                    value: 
+                -   name: LOG_PORT
+                    value: 
+                ports:
+                -   containerPort: 8080
