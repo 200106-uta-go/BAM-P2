@@ -73,8 +73,8 @@ button:hover {
 #loginModal {
     display: flex;
     flex-direction: row;
-    margin: 5% 0 5% 12%;
-    padding: 8% 5% 0;
+    justify-content: center;
+    margin-top: 10%;
     text-align: right;
 }
 
