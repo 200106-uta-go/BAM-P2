@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<header>
+    <title>Dashboard</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="index.css">
+</header>
+<body>
+    <h1>Dashboard</h1>
+    <ul>
+        <li><button class="showForm" value="applyForm">Apply Deployment</button></li>
+        <li><button class="showForm" value="deleteForm">Delete Object</button></li>
+        <li><button class="showForm" value="describeForm">Describe Object</button></li>
+        <li><button class="showForm" value="getForm">Get Object</button></li>
+        <li><button class="showForm" value="scaleForm">Scale Deployment</button></li>
+        <li><button class="showForm" value="logForm">Get Logs</button></li>
+    </ul>
+    <div class="form" id="applyForm">
+        <h3>Apply Deployment</h3>
+        <div class="formInput">
+            <label for="applyFile">Deployment File</label>
+            <input type="file" id="applyFile">
+        </div>
+        <button id="applySubmit">Apply</button>
+    </div>
+    <div class="form" id="deleteForm">
+        <h3>Delete</h3>
+        <div class="formInput">
+            <label for="deleteSelect">Object type</label>
+            <select id="deleteSelect">
+                <option value="deployment">Deployment</option>
+                <option value="node">Node</option>
+                <option value="pod">Pod</option>
+                <option value="svc">Service</option>
+            </select>
+        </div>
+        <div class="formInput">
+            <label for="deleteName">Name</label>
+            <input type="text" id="deleteName">
+        </div>
+        <button id="deleteSubmit">Delete</button>
+    </div>
+    <div class="form" id="getForm">
+        <h3>Get</h3>
+        <div class="formInput">
+            <label for="getSelect">Object type</label>
+            <select id="getSelect">
+                <option value="deployment">Deployment</option>
+                <option value="node">Node</option>
+                <option value="pod">Pod</option>
+                <option value="svc">Service</option>
+            </select>
+        </div>
+        <div class="formInput">
+            <label for="getName">Name</label>
+            <input type="text" id="getName">
+        </div>
+        <button id="getSubmit">Get</button>
+    </div>
+    <div class="form" id="describeForm">
+        <h3>Describe</h3>
+        <div class="formInput">
+            <label for="describeSelect">Object type</label>
+            <select id="describeSelect">
+                <option value="deployment">Deployment</option>
+                <option value="node">Node</option>
+                <option value="pod">Pod</option>
+                <option value="svc">Service</option>
+            </select>
+        </div>
+        <div class="formInput">
+            <label for="describeName">Name</label>
+            <input type="text" id="describeName">
+        </div>
+        <button id="describeSubmit">Describe</button>
+    </div>
+    <div class="form" id="scaleForm">
+        <h3>Scale</h3>
+        <div class="formInput">
+            <label for="replicaCount">Replicas</label>
+            <input type="number" id="replicaCount">
+        </div>
+        <div class="formInput">
+            <label for="replicaFile">Deployment File</label>
+            <input type="file" id="replicaFile">
+        </div>
+        <button id="replicaSubmit">Apply</button>
+    </div>
+    <div class="form" id="logForm">
+        <h3>Get logs from pod</h3>
+        <div class="formInput">
+            <label for="logName">Pod Name</label>
+            <input type="text" id="logName">
+        </div>
+        <button id="logSubmit">Apply</button>
+    </div>
+    <script src="index.js"></script>
+</body>
