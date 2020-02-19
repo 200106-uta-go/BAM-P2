@@ -55,58 +55,70 @@ type Control struct {
 
 // KubeApply creates string for kubectl apply command
 func KubeApply(filepath string) string {
+	var outputstring string
 	if filepath == "" {
-		return ""
+		outputstring = ""
 	} else {
-		return fmt.Sprintf("apply -f %s", filepath)
+		outputstring = fmt.Sprintf("apply -f %s", filepath)
 	}
+	return outputstring
 }
 
 // KubeDelete creates string for kubectl delete command
 func KubeDelete(object string, name string) string {
+	var outputstring string
 	if object == "" || name == "" {
-		return ""
+		outputstring = ""
 	} else {
-		return fmt.Sprintf("delete %s %s", object, name)
+		outputstring = fmt.Sprintf("delete %s %s", object, name)
 	}
+	return outputstring
 }
 
 // KubeGet creates string for kubectl get command
 func KubeGet(object string, name string) string {
+	var outputstring string
 	if object == "" || name == "" {
-		return ""
+		outputstring = ""
 	} else {
-		return fmt.Sprintf("get %s %s", object, name)
+		outputstring = fmt.Sprintf("get %s %s", object, name)
 	}
+	return outputstring
 }
 
 // KubeDescribe creates string for kubectl describe command
 func KubeDescribe(object string, name string) string {
+	var outputstring string
 	if object == "" || name == "" {
-		return ""
+		outputstring = ""
 	} else {
-		return fmt.Sprintf("describe %s %s", object, name)
+		outputstring = fmt.Sprintf("describe %s %s", object, name)
 	}
+	return outputstring
 }
 
 // KubeScale creates string for kubectl scale command
 func KubeScale(count string, deployment string) string {
+	var outputstring string
 	if count == "" || deployment == "" {
-		return ""
+		outputstring = ""
 	} else if strings.HasSuffix(deployment, ".yaml") {
-		return fmt.Sprintf("scale --replicas=%s -f %s", count, deployment)
+		outputstring = fmt.Sprintf("scale --replicas=%s -f %s", count, deployment)
 	} else {
-		return fmt.Sprintf("scale --replicas=%s %s", count, deployment)
+		outputstring = fmt.Sprintf("scale --replicas=%s %s", count, deployment)
 	}
+	return outputstring
 }
 
 // KubeLogs creates string for kubectl logs command
 func KubeLogs(podname string) string {
+	var outputstring string
 	if podname == "" {
-		return ""
+		outputstring = ""
 	} else {
-		return fmt.Sprintf("logs %s", podname)
+		outputstring = fmt.Sprintf("logs %s", podname)
 	}
+	return outputstring
 }
 
 // KubeClusterInfo creates string for kubectl cluster-info command
