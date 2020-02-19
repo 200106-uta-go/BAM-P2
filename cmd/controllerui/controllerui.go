@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/200106-uta-go/BAM-P2/pkg/controller"
 	"github.com/200106-uta-go/BAM-P2/pkg/httputil"
 )
 
@@ -23,7 +24,8 @@ var port = ":4040"
 
 func main() {
 	//setup fileserver for serving index.html
-	fs := http.FileServer(http.Dir("./"))
+	// fs := http.FileServer(http.Dir("./web"))
+	// http.Handle("/dashboard/", http.StripPrefix("/dashboard/", fs))
 
 	//handle routes used by client
 	http.HandleFunc("/apply", apply)
@@ -35,7 +37,7 @@ func main() {
 	http.HandleFunc("/cluster", cluster)
 
 	fmt.Println("Server listening on localhost", port)
-	log.Fatalln(http.ListenAndServe(port, fs))
+	log.Fatalln(http.ListenAndServe(port, nil))
 }
 
 func apply(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +45,7 @@ func apply(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	controller.apply(newRequest.Filepath)
+	controller.KubeApply(newRequest.Filepath)
 	w = httputil.SetHeaders(w)
 	w.Write([]byte("OK"))
 }
@@ -53,7 +55,7 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	controller.delete(newRequest.Object, newRequest.Name)
+	controller.KubeDelete(newRequest.Object, newRequest.Name)
 	w = httputil.SetHeaders(w)
 	w.Write([]byte("OK"))
 }
@@ -63,9 +65,9 @@ func get(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	json := controller.get(newRequest.Object, newRequest.Name)
+	json := controller.KubeGet(newRequest.Object, newRequest.Name)
 	w = httputil.SetHeaders(w)
-	w.Write(json)
+	w.Write([]byte(json))
 }
 
 func describe(w http.ResponseWriter, r *http.Request) {
@@ -73,9 +75,9 @@ func describe(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	json := controller.describe(newRequest.Object, newRequest.Name)
+	json := controller.KubeDescribe(newRequest.Object, newRequest.Name)
 	w = httputil.SetHeaders(w)
-	w.Write(json)
+	w.Write([]byte(json))
 }
 
 func scale(w http.ResponseWriter, r *http.Request) {
@@ -83,7 +85,7 @@ func scale(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	controller.scale(newRequest.Replicas, newRequest.Filepath)
+	controller.KubeScale(newRequest.Replicas, newRequest.Filepath)
 	w = httputil.SetHeaders(w)
 	w.Write([]byte("OK"))
 }
@@ -93,17 +95,17 @@ func logs(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	json := controller.logs(newRequest.Name)
+	json := controller.KubeLogs(newRequest.Name)
 	w = httputil.SetHeaders(w)
-	w.Write(json)
+	w.Write([]byte(json))
 }
 
 func cluster(w http.ResponseWriter, r *http.Request) {
 	//
 
-	json := controller.cluster()
+	json := controller.KubeClusterInfo()
 	w = httputil.SetHeaders(w)
-	w.Write(json)
+	w.Write([]byte(json))
 }
 
 func readBody(r *http.Request) string {

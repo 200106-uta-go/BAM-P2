@@ -66,12 +66,13 @@ function submitGet(object, name) {
         name: name,
         replicas: "",
     };
+    console.log(`${server}/get`);
     return fetch(`${server}/get`, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(reqBody),
     })
-    .then(resp => resp.json())
+    .then(resp => resp.text())
     .then(json => {
         return json;
     });
@@ -117,7 +118,7 @@ function submitDescribe(object, name) {
         headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(reqBody),
     })
-    .then(resp => resp.json())
+    .then(resp => resp.text())
     .then(json => {
         return json;
     });
@@ -135,7 +136,7 @@ function getLogs(name) {
         headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(reqBody),
     })
-    .then(resp => resp.json())
+    .then(resp => resp.text())
     .then(json => {
        return json;
     });
