@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/200106-uta-go/BAM-P2/pkg/httputil"
 	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/joho/godotenv"
 )
@@ -33,11 +33,6 @@ type Journal struct {
 type JEntry struct {
 	Date  string `json:"date"`
 	Entry string `json:"entry"`
-}
-
-// HTTPResponse defines a generic struct for sending a http response message as JSON
-type HTTPResponse struct {
-	Message string `json:"message"`
 }
 
 //set up the database connection
@@ -70,7 +65,7 @@ func init() {
 	}
 	ctx := context.Background()
 	err = database.PingContext(ctx)
-	genericErrHandler("error", err)
+	httputil.GenericErrHandler("error", err)
 
 	//create user table if it doesn't exist
 	statement, err := database.Prepare(`IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='user_table' and xtype='U') 
@@ -89,7 +84,7 @@ func main() {
 	servPort := ":" + os.Getenv("SERV_PORT")
 
 	//create endpoints for web client api
-	http.HandleFunc("/", goodRequest)
+	http.HandleFunc("/", httputil.GoodRequest)
 	http.HandleFunc("/login", userLogin)
 	http.HandleFunc("/createUser", createUser)
 	http.HandleFunc("/addJEntry", addJEntry)
@@ -97,49 +92,4 @@ func main() {
 
 	fmt.Printf("HTTP server listening on port %s\n", servPort)
 	http.ListenAndServe(servPort, nil)
-}
-
-// setHeaders sets the response headers for an outgoing HTTP response
-func setHeaders(w http.ResponseWriter) http.ResponseWriter {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
-	return w
-}
-
-func goodRequest(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprintln(w, "OK")
-	genericErrHandler("error", err)
-}
-
-// badRequest sends an HTTP response with a Bad Request status code along
-// with the message passed into the function back to the client in JSON format
-func badRequest(w http.ResponseWriter, message string) {
-	response := HTTPResponse{
-		Message: message,
-	}
-	r, err := json.Marshal(response)
-	genericErrHandler("error", err)
-
-	w.WriteHeader(http.StatusBadRequest)
-	w.Write(r)
-}
-
-// genericErrHandler is a function to replace the common
-// generic error handler written throughout the code
-func genericErrHandler(action string, err error) {
-	switch action {
-	case "print":
-		if err != nil {
-			log.Println(err)
-		}
-	case "error":
-		if err != nil {
-			log.Fatalln(err)
-		}
-	default:
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}
 }
