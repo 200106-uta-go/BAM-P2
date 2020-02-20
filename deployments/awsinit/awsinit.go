@@ -71,7 +71,7 @@ func AddAWSUserM() {
 
 	commander.CmdRunSilent("aws configure set aws_access_key_id " + awsKey)
 	commander.CmdRunSilent("aws configure set aws_secret_access_key " + awsSecret)
-	commander.CmdRunSilent("was configure set region " + region)
+	commander.CmdRunSilent("aws configure set region " + region)
 	commander.CmdRunSilent("aws configure set aws_default_output " + output)
 
 	fmt.Println("AWS CLI Configured using provided information!")
@@ -81,7 +81,7 @@ func AddAWSUserM() {
 func AddAWSUserAuto(key string, secret string, region string, output string) {
 	commander.CmdRunSilent("aws configure set aws_access_key_id " + key)
 	commander.CmdRunSilent("aws configure set aws_secret_access_key " + secret)
-	commander.CmdRunSilent("was configure set region " + region)
+	commander.CmdRunSilent("aws configure set region " + region)
 	commander.CmdRunSilent("aws configure set aws_default_output " + output)
 
 	fmt.Println("AWS CLI Configured using provided information!")
