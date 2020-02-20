@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/200106-uta-go/BAM-P2/pkg/controller"
 	"github.com/200106-uta-go/BAM-P2/pkg/httputil"
@@ -14,29 +15,30 @@ import (
 // Request is a struct to hold the values included in
 // the requests from the web client
 type Request struct {
-	Filepath string `json:"filepath"`
-	Object   string `json:"object"`
-	Name     string `json:"name"`
-	Replicas string `json:"replicas"`
+	Deployment string `json:"deployment"`
+	Object     string `json:"object"`
+	Name       string `json:"name"`
+	Replicas   string `json:"replicas"`
 }
 
 var port = ":4040"
 
 func main() {
 	//setup fileserver for serving index.html
-	// fs := http.FileServer(http.Dir("./web"))
-	// http.Handle("/dashboard/", http.StripPrefix("/dashboard/", fs))
+	fs := http.FileServer(http.Dir("web/"))
+	http.Handle("/web/", http.StripPrefix("/web/", fs))
 
 	//handle routes used by client
 	http.HandleFunc("/apply", apply)
 	http.HandleFunc("/delete", delete)
 	http.HandleFunc("/get", get)
-	http.HandleFunc("/describe", describe)
 	http.HandleFunc("/scale", scale)
 	http.HandleFunc("/logs", logs)
+	http.HandleFunc("/run", run)
 	http.HandleFunc("/cluster", cluster)
 
-	fmt.Println("Server listening on localhost", port)
+	fmt.Printf("Server listening on localhost%s\n", port)
+	fmt.Printf("Access the controller dashbaord at http://localhost%s/web\a \n", port)
 	log.Fatalln(http.ListenAndServe(port, nil))
 }
 
@@ -45,9 +47,18 @@ func apply(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	controller.KubeApply(newRequest.Filepath)
+	temp, err := os.Create("temp.yaml")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	temp.WriteString(newRequest.Deployment)
+	temp.Close()
+
+	fmt.Println(newRequest.Deployment)
+	controller.KubeApply("./temp.yaml")
 	w = httputil.SetHeaders(w)
 	w.Write([]byte("OK"))
+	os.Remove("temp.yaml")
 }
 
 func delete(w http.ResponseWriter, r *http.Request) {
@@ -70,14 +81,14 @@ func get(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(json))
 }
 
-func describe(w http.ResponseWriter, r *http.Request) {
-	//get object and name from request
+func run(w http.ResponseWriter, r *http.Request) {
+	//get image name from request
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	json := controller.KubeDescribe(newRequest.Object, newRequest.Name)
+	controller.KubeRun(newRequest.Name)
 	w = httputil.SetHeaders(w)
-	w.Write([]byte(json))
+	w.Write([]byte("OK"))
 }
 
 func scale(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +96,7 @@ func scale(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	newRequest := jsonToRequest(body)
 
-	controller.KubeScale(newRequest.Replicas, newRequest.Filepath)
+	controller.KubeScale(newRequest.Replicas, newRequest.Deployment)
 	w = httputil.SetHeaders(w)
 	w.Write([]byte("OK"))
 }
@@ -100,10 +111,10 @@ func logs(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(json))
 }
 
+//retrieves cluster-info string from cluster
 func cluster(w http.ResponseWriter, r *http.Request) {
-	//
-
 	json := controller.KubeClusterInfo()
+	fmt.Println(json)
 	w = httputil.SetHeaders(w)
 	w.Write([]byte(json))
 }

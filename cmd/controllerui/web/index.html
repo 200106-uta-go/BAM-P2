@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<header>
+    <title>Dashboard</title>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</header>
+<body>
+    <div id="clusterInfo">
+        <h1>Kubernetes Cluster Dashboard</h1>
+        
+    </div>
+    <div id="deploymentSection" class="objectSection">
+        <h2>Deployments <button class="showForm" value="applyForm">Add Deployment +</button></h2>
+        <div class="objectCardContainer" id="deploymentCardContainer">
+        </div>
+    </div>
+    <div id="nodeSection" class="objectSection">
+        <h2>Nodes</h2>
+        <div class="objectCardContainer" id="nodeCardContainer">
+        </div>
+    </div>
+    <div id="podSection" class="objectSection">
+        <div id="podMenu">
+            <h2>Pods</h2>
+            <button class="showForm" value="runForm">Add Pod +</button>
+            <ul id="podMenuScale">
+                
+            </ul>
+        </div>
+        <div class="objectCardContainer" id="podCardContainer">
+        </div>
+    </div>
+    <div id="serviceSection" class="objectSection">
+        <h2>Services <button class="showForm" value="applyForm">Add Deployment +</button></h2>
+        <div class="objectCardContainer" id="serviceCardContainer">
+        </div>
+    </div>
+    <div class="form" id="applyForm">
+        <h3>Apply Deployment</h3>
+        <div class="formInput">
+            <textarea id="deploymentScript" cols="80" rows="10"></textarea>
+        </div>
+        <button id="applySubmit">Apply</button>
+    </div>
+    <div class="form" id="logForm">
+        <h3>Get logs from pod</h3>
+        <div class="formInput">
+            <textarea id="logDisplay" cols="80" rows="10"></textarea>
+        </div>
+        <button onclick="hideAllForms()">Close</button>
+    </div>
+    <div class="form" id="runForm">
+        <h3>Create pod from image</h3>
+        <div class="formInput">
+            <h3>Image: </h3>
+            <input id="runImage" type="text">
+        </div>
+        <button id="runSubmit">Create Pod</button>
+    </div>
+    <script src="index.js"></script>
+</body>
