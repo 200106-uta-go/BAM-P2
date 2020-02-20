@@ -1,0 +1,191 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+#clusterInfo {
+    padding: 2em 2em 1em;
+    background-color: rgb(158, 199, 130);
+    font-size: 1.2rem;
+    border-bottom: 1em solid rgb(106, 172, 62);
+}
+
+#clusterInfo h1 {
+    margin-bottom: 0.5em;
+}
+
+#clusterInfo h3 {
+    margin-bottom: 0.2em;
+}
+
+.objectSection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2em;
+}
+
+.objectSection h2 {
+    padding: 1em 2em;
+    border-bottom: 1px solid black;
+    background-color: rgb(80, 158, 28);
+    color: white;
+}
+
+.objectSection button {
+    background-color: white;
+    padding: 0.5em 1em;
+    margin-left: 3em;
+    border: 1px solid black;
+    color: black;
+}
+
+.objectCardContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 1em;
+}
+
+.objectCard {
+    position: relative;
+    height: 20em;
+    width: 26em;
+    margin: 1em;
+    background-color: rgb(206, 205, 205);
+    box-shadow: 0 3px 5px black;
+}
+
+.objectCard:hover {
+    opacity: 0.9;
+}
+
+.objectCard h2 {
+    padding: 1em;
+    margin-bottom: 0.3em;
+}
+
+.objectCard p {
+    padding-left: 1em;
+    margin: 0.3em 0;
+}
+
+.objectCard ul {
+    position: absolute;
+    bottom: 1.5em;
+    right: 2em;
+}
+
+.objectCard button {
+    background-color: rgba(0,0,0,0);
+    margin: 0;
+    border: none;
+}
+
+.objectCard img {
+    height: 2em;
+    width: 2em;
+}
+
+.objectCard img:hover {
+    opacity: 0.7;
+}
+
+#podMenu {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(80, 158, 28);
+    border-bottom: 1px solid black;
+}
+
+#podMenu h2 {
+    border: none;
+}
+
+#podMenuScale {
+    display: flex;
+    flex-direction: row;
+    margin-left: 5em;
+}
+
+#podMenuScale h2 {
+    margin: 0 0 0 2em;
+    padding: 1em 0.4em;
+}
+
+#podMenu h3 {
+    font-size: 1.5em;
+    color: white;
+    padding: 1em 0.4em;
+}
+
+#podMenu button {
+    margin: 2em 0;
+}
+
+.form {
+    position: fixed;
+    top: 5%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    background-color: rgb(82, 155, 250);
+    padding: 1em;
+    display: none;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: center;
+    color: white;
+    border: 1px solid black;
+    box-shadow: 5px 4px 2px 3000px rgba(255,255,255,0.7);
+    font-size: 2.5rem;
+}
+
+.form textarea {
+    min-height: 60vh;
+    padding: 1em;
+}
+
+.form h3 {
+    margin: 0 0;
+    font-size: 1em;
+}
+
+.formInput {
+    display: flex;
+    flex-direction: row;
+    margin: 1em;
+}
+
+.form input {
+    border: 1px solid black;
+    border-radius: none;
+}
+
+#runImage {
+    width: 30vw;
+    font-size: 1em;
+}
+
+.form button {
+    width: 10em;
+    padding: 1em;
+    margin: 0 auto;
+    background-color: white;
+    border: 1px solid black;
+}
+
+svg {
+    height: 10%;
+    width: 10%;
+    padding: 6em 0 0 3em;
+}
+
+svg:hover {
+    opacity: 0.7;
+}
