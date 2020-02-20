@@ -3,6 +3,7 @@ package commander
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -10,7 +11,7 @@ import (
 func cmd(s string) ([]byte, error) {
 	cmdSlice := strings.Split(s, " ")
 	command := exec.Command(cmdSlice[0], cmdSlice[1:]...)
-	// command.Stderr = os.Stderr
+	command.Stderr = os.Stderr
 	out, err := command.Output()
 	return out, err
 }
