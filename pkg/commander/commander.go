@@ -27,7 +27,7 @@ func CmdRun(s string) {
 	fmt.Println(string(out))
 }
 
-// CmdRunNoErrs runs a command provided by user (string) and provides feedback on what it is doing but without showing errors
+// CmdRunNoErr runs a command provided by user (string) and provides feedback on what it is doing but without showing errors
 func CmdRunNoErr(s string) {
 	fmt.Println("Running command: " + s)
 	out, _ := cmd(s)
@@ -77,7 +77,7 @@ func CmdRunOutSilent(s string) string {
 	return string(out)
 }
 
-// CmdRunOutSilent runs a command provided by user (string) and returns the output in a string and does not provide feedback
+// CmdRunOutSilentNoErr runs a command provided by user (string) and returns the output in a string and does not provide feedback
 // on what it is doing but with out show
 func CmdRunOutSilentNoErr(s string) string {
 	out, _ := cmd(s)
