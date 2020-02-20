@@ -22,19 +22,21 @@ How to use the installer/launcher
 
 The BAM web interface allows the user to wasily control a cluster from their host machine. Once your cluster has been created, you need to add a deployment to start running container in your kubernetes pods.
 
-The web interface provides two ways to create a deployment. Id you have a .yaml formatted deployment ready to go, you can paste your deployment into the text box that appears when you click the `add deployment` button.
+The web interface provides two ways to create a deployment. Id you have a .yaml formatted deployment ready to go, you can paste your deployment into the text box that appears when you click the `add deployment` button. Services must be created using a deployment using .yaml formatted text in the apply deployment window. 
 
 ![Image of add deployment button](https://i.ibb.co/5x6XJzm/controller-addpod.png)
 
 The other way you can start a deployment is to add a new pod using a container image name from [DockerHub](https://hub.docker.com/). Make sure to include the user if present and the version you want to deploy.
 
-![Image of add pod button](https://i.ibb.co/CnWgL2x/controller-deployment.png)
+![Image of add pod button](https://i.ibb.co/8gRV7qM/controller-deployment.png)
 
 Once your deployment is running, you can increase and decrease the pod replicas for each deployment using the buttons next to the pods header.
 
 ![Image of scale buttons](https://i.ibb.co/Yy2kRPb/scale.png)
 
-Services must be created using a deployment using .yaml formatted text in the apply deployment window. 
+You can view the logs for the pod and delete the pod from your deployment using the buttons on the bottom of each pod's details.
+
+
 
 ## Development
 
