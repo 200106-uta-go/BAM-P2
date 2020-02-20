@@ -40,7 +40,11 @@ You can view the logs for the pod and delete the pod from your deployment using 
 
 ## Development
 
-Talk about how to set up the development environment
+To get started with a development environment for this project, you only need a go installation and the go dependencies for each application. These can be retrieved using:
+```
+go get -d
+```
+You will find multiple different applications in the command package, most of which were designed to be used inside containers running on a kubernetes cluster. The makefile has scripts to create docker images and deploy each app into a docker container. The apps can also be built into a go binary for easy testing during development. 
 
 ## Built With
 
