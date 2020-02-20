@@ -90,9 +90,13 @@ func CreateKopsStateStore() string {
 		os.Setenv("KOPS_STATE_STORE", "s3://"+bucket)
 		return "s3://" + bucket
 	}
+
+	region := commander.CmdRunOutSilent("aws configure get region")
+	region = region[:len(region)-1] // remove last character \n
+
 	// no bucket with that name need to create one
 	fmt.Println("Creating aws s3 bucket...")
-	commander.CmdRun("aws s3api create-bucket --bucket " + bucket + " --region [REGION]")
+	commander.CmdRun("aws s3api create-bucket --bucket " + bucket + " --region " + region)
 	commander.CmdRun("aws s3api put-bucket-versioning --bucket " + bucket + " --versioning-configuration Status=Enabled")
 	commander.CmdRun("aws s3api put-bucket-encryption --bucket " + bucket + " --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'")
 	os.Setenv("KOPS_STATE_STORE", "s3://"+bucket)
