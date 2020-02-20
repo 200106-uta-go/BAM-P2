@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/200106-uta-go/BAM-P2/pkg/commander"
 )
 
 // CheckForFile checks to see if file exist
@@ -103,4 +105,12 @@ func ReadFile(filename string) []byte {
 		return nil
 	}
 	return data
+}
+
+// AppendToEnv takes a string message and appends it to the in of the users .profile then sources it for use
+func AppendToEnv(s string) {
+	// append env to .profile
+	os.Chdir(os.Getenv("HOME"))
+	WriteAppend(".profile", []byte(s))
+	commander.CmdRun("source .profile")
 }

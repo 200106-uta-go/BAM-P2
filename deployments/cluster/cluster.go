@@ -7,11 +7,11 @@ package cluster
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/200106-uta-go/BAM-P2/deployments/awsinit"
 	"github.com/200106-uta-go/BAM-P2/pkg/commander"
+	"github.com/200106-uta-go/BAM-P2/pkg/filewriter"
 	"github.com/200106-uta-go/BAM-P2/pkg/userinputs"
 )
 
@@ -61,8 +61,8 @@ func CreateKopsAWSUser() {
 		awsinit.AddAWSUserAuto(key, secret, "", "")
 
 		// export keys as env
-		os.Setenv("AWS_ACCESS_KEY_ID", key)
-		os.Setenv("AWS_SECRET_ACCESS_KEY", secret)
+		filewriter.AppendToEnv("export AWS_ACCESS_KEY_ID=" + key)
+		filewriter.AppendToEnv("export AWS_SECRET_ACCESS_KEY=" + secret)
 
 	} else {
 		// else let user now it already exist
@@ -99,7 +99,7 @@ func CreateKopsStateStore() string {
 		commander.CmdRun("aws s3api put-bucket-encryption --bucket " + bucket + " --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'")
 	}
 
-	os.Setenv("KOPS_STATE_STORE", "s3://"+bucket)
+	filewriter.AppendToEnv("export KOPS_STATE_STORE=s3://" + bucket)
 	return "s3://" + bucket
 }
 
@@ -110,7 +110,6 @@ func PrepairCluster() string {
 
 	// clust.kopsStateStore
 	kobStateStore := CreateKopsStateStore()
-	os.Setenv("KOPS_STATE_STORE", kobStateStore)
 	// clust.clusterName
 	for {
 		clusterName = userinputs.RequestAnswer("Enter cluster name (must be followed with a .k8s.local, ex: yourCluster.k8s.local):")
@@ -147,7 +146,6 @@ func PrepairCluster() string {
 		"--node-count=" + nodeCount + " --node-size=" + nodeType + " " +
 		"--master-count=" + masterCount + " --master-size=" + masterType + " " + clusterName)
 
-	os.Setenv("KOPS_STATE_STORE", kobStateStore)
 	return clusterName
 }
 
