@@ -82,7 +82,12 @@ func KubeRun(image string) string {
 	if image == "" {
 		outputstring = ""
 	} else {
-		outputstring = fmt.Sprintf("run %s --image %s", image, image)
+		name := strings.Split(image, "/")
+		if len(name) > 1 {
+			outputstring = fmt.Sprintf("run %s --image %s", name[1], image)
+		} else {
+			outputstring = fmt.Sprintf("run %s --image %s", image, image)
+		}
 	}
 	return KubeCommand(outputstring)
 }

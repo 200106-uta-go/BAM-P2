@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 
 	"github.com/200106-uta-go/BAM-P2/pkg/controller"
 	"github.com/200106-uta-go/BAM-P2/pkg/httputil"
@@ -37,6 +38,7 @@ func main() {
 	http.HandleFunc("/run", run)
 	http.HandleFunc("/cluster", cluster)
 
+	exec.Command("xdg-open", "http://localhost:4040/web").Run()
 	fmt.Printf("Server listening on localhost%s\n", port)
 	fmt.Printf("Access the controller dashbaord at http://localhost%s/web\a \n", port)
 	log.Fatalln(http.ListenAndServe(port, nil))
