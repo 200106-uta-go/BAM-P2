@@ -15,8 +15,8 @@ var deploy bool
 
 func init() {
 	// sets flag options
-	flag.BoolVar(&install, "random", false, "Generates a fully random NPC using set defaults") // install prerequisites
-	flag.BoolVar(&deploy, "make", false, "Generates a NPC using user defined variables")       // deploy cluster
+	flag.BoolVar(&install, "install", false, "Launches installer for aws | kops | kubectl") // install prerequisites
+	flag.BoolVar(&deploy, "deploy", false, "Starts a cluster")                              // deploy cluster
 }
 
 func main() {
@@ -38,9 +38,6 @@ func installer() {
 	// install and setup aws
 	if awsinit.CheckInstall() {
 		fmt.Println("AWS CLI is already installed!")
-		if awsinit.ReadyToConfig() {
-			awsinit.AddAWSUserM()
-		}
 	} else {
 		awsinit.InstallAWS()
 		if awsinit.ReadyToConfig() {

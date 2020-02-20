@@ -87,6 +87,7 @@ func CreateKopsStateStore() string {
 	if !haveBucket {
 		// already have bucket with that name
 		fmt.Println("That bucket already exist in your AWS, using that bucket")
+		os.Setenv("KOPS_STATE_STORE", "s3://"+bucket)
 		return "s3://" + bucket
 	}
 	// no bucket with that name need to create one
@@ -94,6 +95,7 @@ func CreateKopsStateStore() string {
 	commander.CmdRun("aws s3api create-bucket --bucket " + bucket + " --region [REGION]")
 	commander.CmdRun("aws s3api put-bucket-versioning --bucket " + bucket + " --versioning-configuration Status=Enabled")
 	commander.CmdRun("aws s3api put-bucket-encryption --bucket " + bucket + " --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'")
+	os.Setenv("KOPS_STATE_STORE", "s3://"+bucket)
 	return "s3://" + bucket
 }
 
@@ -102,6 +104,9 @@ func PrepairCluster() string {
 	fmt.Println("Prepairing cluster")
 	var clusterName string
 
+	// clust.kopsStateStore
+	kobStateStore := CreateKopsStateStore()
+	os.Setenv("KOPS_STATE_STORE", kobStateStore)
 	// clust.clusterName
 	for {
 		clusterName = userinputs.RequestAnswer("Enter cluster name (must be followed with a .k8s.local, ex: yourCluster.k8s.local):")
@@ -111,10 +116,9 @@ func PrepairCluster() string {
 			break
 		}
 	}
-	// clust.kopsStateStore
-	kobStateStore := CreateKopsStateStore()
 	// clust.region
 	region := commander.CmdRunOutSilent("aws configure get region")
+	region = region[:len(region)-1] // remove last character \n
 	// clust.masterType
 	masterType := userinputs.RequestAnswer("What EC2 type do you want for your master (ex: t2.micro. m5.large, etc.)?")
 	// clust.masterCount
@@ -151,9 +155,20 @@ func Up() {
 	commander.CmdRun("kops update cluster " + name + " --yes")
 }
 
-// Down removes the cluster with name (string) also removes deletes any cloud resources currently active
-func Down(name string) {
+// Down removes the cluster also removes/deletes any cloud resources currently active
+func Down() {
 	// destroy cluster (down)
+	var name string
+	kobStateStore := CreateKopsStateStore()
+	os.Setenv("KOPS_STATE_STORE", kobStateStore)
+	for {
+		name = userinputs.RequestAnswer("Enter name of cluster you wish to remove:")
+		if CheckCluster(name) {
+			break
+		} else {
+			fmt.Println("That cluster does not exist, please use a diffrent name")
+		}
+	}
 	commander.CmdRun("kops delete cluster " + name + " --yes")
 }
 
