@@ -7,4 +7,6 @@
 #generated log files
 *.log
 
+#working reference files
+/ignore
 

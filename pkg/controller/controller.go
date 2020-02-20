@@ -8,21 +8,6 @@ import (
 	"strings"
 )
 
-// var subcommand string
-
-// Control struct outline
-/*
-type Control struct {
-	Apply -f -- filepath string
-	Delete ${object} name  -- object string, name string
-	Get ${object} name  -- object string, name string
-	Describe   -- object string, name string
-	Scale -- replicascount string, deployment filepath string
-	Logs -- podname string
-	Cluster-info -- no arguments
-}
-*/
-
 // KubeApply creates string for kubectl apply command
 func KubeApply(filepath string) string {
 	var outputstring string
@@ -86,7 +71,18 @@ func KubeLogs(podname string) string {
 	if podname == "" {
 		outputstring = ""
 	} else {
-		outputstring = fmt.Sprintf("logs -o=json %s", podname)
+		outputstring = fmt.Sprintf("logs %s", podname)
+	}
+	return KubeCommand(outputstring)
+}
+
+// KubeRun starts a container in a pod using a dockerhub image
+func KubeRun(image string) string {
+	var outputstring string
+	if image == "" {
+		outputstring = ""
+	} else {
+		outputstring = fmt.Sprintf("run %s --image %s", image, image)
 	}
 	return KubeCommand(outputstring)
 }
@@ -104,7 +100,7 @@ func KubeCommand(command string) string {
 
 	//create and run command
 	cmd := exec.Command("kubectl", strings.Split(command, " ")...)
-	log.Println("Running", cmd)
+	//log.Println("Running", cmd)
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	bytes, err := cmd.Output()
