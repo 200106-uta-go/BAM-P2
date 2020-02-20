@@ -84,21 +84,21 @@ func CreateKopsStateStore() string {
 			break
 		}
 	}
-	if !haveBucket {
+	if haveBucket {
 		// already have bucket with that name
 		fmt.Println("That bucket already exist in your AWS, using that bucket")
-		os.Setenv("KOPS_STATE_STORE", "s3://"+bucket)
-		return "s3://" + bucket
+	} else {
+		// creat bucket
+		region := commander.CmdRunOutSilent("aws configure get region")
+		region = region[:len(region)-1] // remove last character \n
+
+		// no bucket with that name need to create one
+		fmt.Println("Creating aws s3 bucket...")
+		commander.CmdRun("aws s3api create-bucket --bucket " + bucket + " --region " + region)
+		commander.CmdRun("aws s3api put-bucket-versioning --bucket " + bucket + " --versioning-configuration Status=Enabled")
+		commander.CmdRun("aws s3api put-bucket-encryption --bucket " + bucket + " --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'")
 	}
 
-	region := commander.CmdRunOutSilent("aws configure get region")
-	region = region[:len(region)-1] // remove last character \n
-
-	// no bucket with that name need to create one
-	fmt.Println("Creating aws s3 bucket...")
-	commander.CmdRun("aws s3api create-bucket --bucket " + bucket + " --region " + region)
-	commander.CmdRun("aws s3api put-bucket-versioning --bucket " + bucket + " --versioning-configuration Status=Enabled")
-	commander.CmdRun("aws s3api put-bucket-encryption --bucket " + bucket + " --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'")
 	os.Setenv("KOPS_STATE_STORE", "s3://"+bucket)
 	return "s3://" + bucket
 }
@@ -163,8 +163,9 @@ func Up() {
 func Down() {
 	// destroy cluster (down)
 	var name string
-	kobStateStore := CreateKopsStateStore()
-	os.Setenv("KOPS_STATE_STORE", kobStateStore)
+	out := commander.CmdRunOut("kops get cluster")
+	fmt.Println("Current running clusters...")
+	fmt.Println(out)
 	for {
 		name = userinputs.RequestAnswer("Enter name of cluster you wish to remove:")
 		if CheckCluster(name) {
@@ -178,7 +179,7 @@ func Down() {
 
 // CheckCluster checks to see if cluster exists and returns true (bool) if present, otherwise false (bool)
 func CheckCluster(name string) bool {
-	out := commander.CmdRunOutSilent("kops get cluster")
+	out := commander.CmdRunOutSilentNoErr("kops get cluster")
 	outSlice := strings.Split(out, " ")
 	for _, o := range outSlice {
 		if o == name {

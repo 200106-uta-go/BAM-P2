@@ -12,11 +12,16 @@ import (
 
 var install bool
 var deploy bool
+var update bool
+var down bool
+var mArgs []string // non-flag arguments from make flag
 
 func init() {
 	// sets flag options
 	flag.BoolVar(&install, "install", false, "Launches installer for aws | kops | kubectl") // install prerequisites
 	flag.BoolVar(&deploy, "deploy", false, "Starts a cluster")                              // deploy cluster
+	flag.BoolVar(&down, "down", false, "Destroys a cluster")                                // destroy cluster
+	flag.Parse()
 }
 
 func main() {
@@ -27,6 +32,9 @@ func main() {
 	case deploy:
 		// deploy cluster
 		cluster.Up()
+	case down:
+		// destroy cluster
+		cluster.Down()
 	default:
 		installer()
 		cluster.Up()
