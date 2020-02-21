@@ -1,7 +1,5 @@
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/200106-uta-go/BAM-P2?include_prereleases)](https://github.com/200106-uta-go/BAM-P2/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/200106-uta-go/BAM-P2?style=flat-square)](https://goreportcard.com/report/github.com/200106-uta-go/BAM-P2)
-[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/200106-uta-go/BAM-P2)
-
 
 # BAM
 Brandon, Aaron, and Matt -- Revature-Project 2
@@ -16,7 +14,11 @@ To control your cluster, launch the `Controller` application and use your browse
 
 ## Using the installer
 
-How to use the installer/launcher
+The installer is packaged with two binaries, one for dependency installation, and one for deploying the cluster to AWS. 
+
+The only prerequisite to running the installer is to have an AWS account and a generated key pair so that KOPS can start ec2 and s3 instances for your cluster. 
+
+If your machine does not have kops, kubectl, or aws cli installed, you need to run the `Installer` before a cluster can be created. Once the `Installer` has run, or if you already have all the necessary programs installed, you can run the `Deploy` executable to launch your kubernetes cluster on AWS.
 
 ## Using the Web Interface
 
