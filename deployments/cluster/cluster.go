@@ -8,6 +8,7 @@ package cluster
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/200106-uta-go/BAM-P2/deployments/awsinit"
 	"github.com/200106-uta-go/BAM-P2/pkg/commander"
@@ -73,38 +74,48 @@ func CreateKopsAWSUser() {
 // CreateKopsStateStore creates a kops state store in a s3 bucket. Asks user for name of bucket, and if bucket is present
 // uses it, otherwise creates bucket
 func CreateKopsStateStore() string {
-	haveBucket := false
 	// get bucket name from user
-	bucket := userinputs.RequestAnswer("Please provide a name for your aws s3 bucket (all buckets must be unique):")
-	out := commander.CmdRunOutSilent("aws s3 ls")
-	outSlice := strings.Split(out, " ")
-	for _, o := range outSlice {
-		if o == bucket {
-			haveBucket = true
-			break
-		}
-	}
+	bucket, haveBucket := HaveBucket("Please select a bucket or provide a name for a new one (all buckets must be unique):")
 	if haveBucket {
 		// already have bucket with that name
-		fmt.Println("That bucket already exist in your AWS, using that bucket")
+		// fmt.Println("That bucket already exist in your AWS, using that bucket")
 	} else {
 		// creat bucket
 		region := commander.CmdRunOutSilent("aws configure get region")
 		region = region[:len(region)-1] // remove last character \n
+		bucketName := bucket[5:len(bucket)]
 
 		// no bucket with that name need to create one
 		fmt.Println("Creating aws s3 bucket...")
-		commander.CmdRun("aws s3api create-bucket --bucket " + bucket + " --region " + region)
-		commander.CmdRun("aws s3api put-bucket-versioning --bucket " + bucket + " --versioning-configuration Status=Enabled")
-		commander.CmdRun("aws s3api put-bucket-encryption --bucket " + bucket + " --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'")
+		commander.CmdRun("aws s3api create-bucket --bucket " + bucketName + " --region " + region)
+		commander.CmdRun("aws s3api put-bucket-versioning --bucket " + bucketName + " --versioning-configuration Status=Enabled")
+		// commander.CmdRun("aws s3api put-bucket-encryption --bucket " + bucketName + " --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'")
 	}
 
-	filewriter.AppendToEnv("export KOPS_STATE_STORE=s3://" + bucket)
-	return "s3://" + bucket
+	return bucket
+}
+
+// HaveBucket takes the name of the bucket and returns the "s3://" version along with a true (bool) if present and false (bool)
+// if not
+func HaveBucket(message string) (string, bool) {
+	out := commander.CmdRunOut("aws s3 ls")
+	bucket := userinputs.RequestAnswer(message)
+	outSlice := strings.Split(out, " ")
+	for _, o := range outSlice {
+		oSlice := strings.Split(o, "\n")
+		for _, oo := range oSlice {
+			if oo == bucket {
+				bucket = "s3://" + bucket
+				return bucket, true
+			}
+		}
+	}
+	bucket = "s3://" + bucket
+	return bucket, false
 }
 
 // PrepairCluster perpairs a cluster for activation
-func PrepairCluster() string {
+func PrepairCluster() {
 	fmt.Println("Prepairing cluster")
 	var clusterName string
 
@@ -113,7 +124,7 @@ func PrepairCluster() string {
 	// clust.clusterName
 	for {
 		clusterName = userinputs.RequestAnswer("Enter cluster name (must be followed with a .k8s.local, ex: yourCluster.k8s.local):")
-		if CheckCluster(clusterName) {
+		if CheckCluster(clusterName, kobStateStore) {
 			fmt.Println("That cluster already exist, please use a diffrent name")
 		} else {
 			break
@@ -131,57 +142,88 @@ func PrepairCluster() string {
 	// clust.nodeCount
 	nodeCount := userinputs.RequestAnswer("How many nodes do you want to run in this cluster?")
 
-	fmt.Println("Creating cluster with the following...\n" +
-		"  cluster:\n" +
-		"    name: " + clusterName + "\n" +
-		"    s3 bucket: " + kobStateStore + "\n" +
-		"    region: " + region + "\n" +
-		"    master type: " + masterType + "\n" +
-		"    master count: " + masterCount + "\n" +
-		"    node type: " + nodeType + "\n" +
-		"    node count: " + nodeCount + "\n")
-
 	commander.CmdRun("kops create cluster --cloud=aws " +
 		"--master-zones=" + region + "a --zones=" + region + "a," + region + "b," + region + "c " +
 		"--node-count=" + nodeCount + " --node-size=" + nodeType + " " +
-		"--master-count=" + masterCount + " --master-size=" + masterType + " " + clusterName)
+		"--master-count=" + masterCount + " --master-size=" + masterType + " " +
+		"--state=" + kobStateStore + " " + clusterName)
 
-	return clusterName
+	time.Sleep(2 * time.Second)
+	commander.CmdRunSilentNoErr("kops create secret --name " + clusterName + " --state " + kobStateStore + " sshpublickey admin -i ~/.ssh/id_rsa.pub")
 }
 
 // Up calls PrepairCluster and then brings it up, activiating any required cloud resources
 func Up() {
-	// deploy cluster (up)
-	CreateKopsAWSUser()
-	name := PrepairCluster()
-	commander.CmdRun("kops update cluster " + name + " --yes")
-}
-
-// Down removes the cluster also removes/deletes any cloud resources currently active
-func Down() {
-	// destroy cluster (down)
+	// need state
+	var bucket string
+	var haveBucket bool
+	for {
+		bucket, haveBucket = HaveBucket("Please select a bucket holding your kops state: (use exit to quit)")
+		if haveBucket {
+			break
+		} else if !haveBucket && bucket == "s3://exit" {
+			return
+		} else {
+			fmt.Println("Invalid bucket, please try again...")
+		}
+	}
+	// bring cluster up (update)
 	var name string
-	out := commander.CmdRunOut("kops get cluster")
-	fmt.Println("Current running clusters...")
+	out := commander.CmdRunOutSilent("kops get cluster --state=" + bucket)
+	fmt.Println("Current available clusters...")
 	fmt.Println(out)
 	for {
-		name = userinputs.RequestAnswer("Enter name of cluster you wish to remove:")
-		if CheckCluster(name) {
+		name = userinputs.RequestAnswer("Enter name of cluster you wish to bring up / update:")
+		if CheckCluster(name, bucket) {
 			break
 		} else {
 			fmt.Println("That cluster does not exist, please use a diffrent name")
 		}
 	}
-	commander.CmdRun("kops delete cluster " + name + " --yes")
+	commander.CmdRun("kops update cluster " + name + " --state=" + bucket + " --yes")
+}
+
+// Destroy removes the cluster also removes/deletes any cloud resources currently active
+func Destroy() {
+	// need state
+	var bucket string
+	var haveBucket bool
+	for {
+		bucket, haveBucket = HaveBucket("Please select a bucket holding your kops state: (use exit to quit)")
+		if haveBucket {
+			break
+		} else if !haveBucket && bucket == "s3://exit" {
+			return
+		} else {
+			fmt.Println("Invalid bucket, please try again...")
+		}
+	}
+	// destroy cluster (delete)
+	var name string
+	out := commander.CmdRunOut("kops get cluster --state=" + bucket)
+	fmt.Println("Current running clusters...")
+	fmt.Println(out)
+	for {
+		name = userinputs.RequestAnswer("Enter name of cluster you wish to remove:")
+		if CheckCluster(name, bucket) {
+			break
+		} else {
+			fmt.Println("That cluster does not exist, please use a diffrent name")
+		}
+	}
+	commander.CmdRun("kops delete cluster " + name + " --state=" + bucket + " --yes")
 }
 
 // CheckCluster checks to see if cluster exists and returns true (bool) if present, otherwise false (bool)
-func CheckCluster(name string) bool {
-	out := commander.CmdRunOutSilentNoErr("kops get cluster")
-	outSlice := strings.Split(out, " ")
+func CheckCluster(name string, bucket string) bool {
+	out := commander.CmdRunOutSilentNoErr("kops get cluster --state=" + bucket)
+	outSlice := strings.Split(out, "\t")
 	for _, o := range outSlice {
-		if o == name {
-			return true
+		oSlice := strings.Split(o, "\n")
+		for _, oo := range oSlice {
+			if oo == name {
+				return true
+			}
 		}
 	}
 	return false
