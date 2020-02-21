@@ -11,7 +11,7 @@ import (
 // CheckInstall simply checks to see if kops is installed, returns true if installled, otherwise false.
 func CheckInstall() bool {
 	// logic to check if kops is already installed
-	version := commander.CmdRunOutSilent("kops version")
+	version := commander.CmdRunOutSilentNoErr("kops version")
 	v := strings.Split(version, " ")
 	if v[0] == "Version" {
 		return true

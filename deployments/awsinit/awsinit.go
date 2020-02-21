@@ -42,7 +42,7 @@ func ReadyToConfig() bool {
 // CheckInstall simply checks to see if aws cli v2 is installed, returns true if installled, otherwise false.
 func CheckInstall() bool {
 	// logic to check if asw cli is already installed
-	version := commander.CmdRunOutSilent("aws --version")
+	version := commander.CmdRunOutSilentNoErr("aws --version")
 	v := strings.Split(version, " ")
 	if v[0] == "aws-cli/2.0.0" {
 		return true

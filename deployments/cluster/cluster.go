@@ -7,8 +7,8 @@ package cluster
 
 import (
 	"fmt"
+	"os"
 	"strings"
-	"time"
 
 	"github.com/200106-uta-go/BAM-P2/deployments/awsinit"
 	"github.com/200106-uta-go/BAM-P2/pkg/commander"
@@ -148,8 +148,9 @@ func PrepairCluster() {
 		"--master-count=" + masterCount + " --master-size=" + masterType + " " +
 		"--state=" + kobStateStore + " " + clusterName)
 
-	time.Sleep(2 * time.Second)
-	commander.CmdRunSilentNoErr("kops create secret --name " + clusterName + " --state " + kobStateStore + " sshpublickey admin -i ~/.ssh/id_rsa.pub")
+	os.Chdir(os.Getenv("HOME"))
+	commander.CmdRunNoErr("ssh-keygen -f id_rsa -t rsa -N ''")
+	commander.CmdRunNoErr("kops create secret --name " + clusterName + " --state " + kobStateStore + " sshpublickey admin -i ~/.ssh/id_rsa.pub")
 }
 
 // Up calls PrepairCluster and then brings it up, activiating any required cloud resources
@@ -200,7 +201,7 @@ func Destroy() {
 	}
 	// destroy cluster (delete)
 	var name string
-	out := commander.CmdRunOut("kops get cluster --state=" + bucket)
+	out := commander.CmdRunOutSilentNoErr("kops get cluster --state=" + bucket)
 	fmt.Println("Current running clusters...")
 	fmt.Println(out)
 	for {

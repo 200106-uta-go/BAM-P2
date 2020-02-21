@@ -12,10 +12,11 @@ import (
 
 func main() {
 	// check for curl and install if not present
+	fmt.Println("Installing curl...")
 	out := commander.CmdRunOutSilentNoErr("curl --version")
 	outSlice := strings.Split(out, " ")
 	if outSlice[0] != "curl" {
-		commander.CmdRunSilentNoErr("sudo apt install curl")
+		commander.CmdRunSilent("sudo apt install curl -y")
 	} else {
 		fmt.Println("Curl is already installed!")
 	}
