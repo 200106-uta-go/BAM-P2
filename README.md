@@ -1,4 +1,5 @@
 [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/200106-uta-go/BAM-P2?include_prereleases)](https://github.com/200106-uta-go/BAM-P2/releases)
+<<<<<<< HEAD
 [![Go Report Card](https://goreportcard.com/badge/github.com/200106-uta-go/BAM-P2?style=flat-square)](https://goreportcard.com/report/github.com/200106-uta-go/BAM-P2)
 
 # BAM
