@@ -84,12 +84,29 @@ func main() {
 	servPort := ":" + os.Getenv("SERV_PORT")
 
 	//create endpoints for web client api
-	http.HandleFunc("/", httputil.GoodRequest)
-	http.HandleFunc("/login", userLogin)
-	http.HandleFunc("/createUser", createUser)
-	http.HandleFunc("/addJEntry", addJEntry)
-	http.HandleFunc("/getJournal", getJournalEntries)
+	goodRequest := http.HandlerFunc(httputil.GoodRequest)
+	http.Handle("/", logRequest(goodRequest))
+
+	login := http.HandlerFunc(userLogin)
+	http.Handle("/login", logRequest(login))
+
+	create := http.HandlerFunc(createUser)
+	http.Handle("/createUser", logRequest(create))
+
+	addEntry := http.HandlerFunc(addJEntry)
+	http.Handle("/addJEntry", logRequest(addEntry))
+
+	getJournal := http.HandlerFunc(getJournalEntries)
+	http.Handle("/getJournal", logRequest(getJournal))
 
 	fmt.Printf("HTTP server listening on port %s\n", servPort)
 	http.ListenAndServe(servPort, nil)
+}
+
+//middleware to send all http requests to the logger
+func logRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.RequestURI)
+		next.ServeHTTP(w, r)
+	})
 }
